@@ -194,7 +194,7 @@
 
     // Step 2: Background asynchronous connection setup
     window.addEventListener('load', () => {
-      const BACKEND_URL = window.location.origin.includes('localhost') ? 'http://localhost:5000' : window.location.origin;
+      const BACKEND_URL = window.location.origin.includes('localhost') ? 'https://e-kart-y4af.onrender.com' : window.location.origin;
       
       // Background REST revalidation
       fetch(`${BACKEND_URL}/api/orders`)
