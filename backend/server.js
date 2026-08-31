@@ -33,6 +33,12 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// API Routes (Must be defined before static routing/catch-alls)
+app.use('/api/products', productRoutes);
+app.use('/api/orders', orderRoutes);
+app.use('/api/offers', offerRoutes);
+app.use('/api/auth', authRoutes);
+
 // Serve Static Frontend and Admin Folders
 app.use('/frontend', express.static(path.join(__dirname, '../frontend')));
 app.use('/admin', express.static(path.join(__dirname, '../admin')));
@@ -40,12 +46,6 @@ app.use('/admin', express.static(path.join(__dirname, '../admin')));
 app.get('/', (req, res) => {
   res.redirect('/frontend/index.html');
 });
-
-// API Routes
-app.use('/api/products', productRoutes);
-app.use('/api/orders', orderRoutes);
-app.use('/api/offers', offerRoutes);
-app.use('/api/auth', authRoutes);
 
 // Socket.io Live Tracking & Real-Time Sync
 io.on('connection', (socket) => {
