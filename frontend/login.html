@@ -1,0 +1,119 @@
+<!-- frontend/login.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>MF Dari Grocery - Account Access</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+<body class="bg-slate-100 text-slate-900 min-h-screen flex items-center justify-center p-4 antialiased">
+  <div class="max-w-md w-full bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8 space-y-6">
+    
+    <!-- Header Icon & Title -->
+    <div class="text-center space-y-2">
+      <div class="w-12 h-12 bg-emerald-500 text-slate-950 rounded-2xl mx-auto flex items-center justify-center font-black text-xl shadow-xs">
+        <i class="fa-solid fa-store" id="header-icon"></i>
+      </div>
+      <h1 id="form-title" class="text-xl font-black tracking-tight">Welcome Back</h1>
+      <p id="form-subtitle" class="text-xs text-slate-500 font-mono">Sign in with your mobile number & password</p>
+    </div>
+
+    <!-- Toggle Tabs for Login / Signup -->
+    <div class="grid grid-cols-2 bg-slate-100 p-1 rounded-xl text-xs font-bold">
+      <button type="button" onclick="switchMode('login')" id="tab-login" class="py-2 rounded-lg bg-white shadow-xs text-slate-950 transition cursor-pointer">Sign In</button>
+      <button type="button" onclick="switchMode('signup')" id="tab-signup" class="py-2 rounded-lg text-slate-500 hover:text-slate-900 transition cursor-pointer">Register</button>
+    </div>
+
+    <!-- Forms -->
+    <form id="auth-form" class="space-y-4">
+      <!-- Name field only shown for signup -->
+      <div id="name-field-container" class="hidden">
+        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Full Name</label>
+        <input type="text" id="auth-name" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="John Doe" />
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Mobile Number</label>
+        <input type="tel" id="auth-identifier" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="9876543210 (or admin 9999999999)" />
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Password</label>
+        <input type="password" id="auth-password" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="••••••••" />
+      </div>
+
+      <button type="submit" id="submit-btn" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold text-sm shadow-xs transition cursor-pointer">
+        Sign In
+      </button>
+    </form>
+  </div>
+
+  <!-- Connect centralized api.js -->
+  <script src="api.js"></script>
+
+  <script>
+    let isLoginMode = true;
+
+    function switchMode(mode) {
+      isLoginMode = (mode === 'login');
+      const nameContainer = document.getElementById('name-field-container');
+      const title = document.getElementById('form-title');
+      const subtitle = document.getElementById('form-subtitle');
+      const submitBtn = document.getElementById('submit-btn');
+      const tabLogin = document.getElementById('tab-login');
+      const tabSignup = document.getElementById('tab-signup');
+      const headerIcon = document.getElementById('header-icon');
+
+      if (isLoginMode) {
+        nameContainer.classList.add('hidden');
+        document.getElementById('auth-name').removeAttribute('required');
+        title.textContent = 'Welcome Back';
+        subtitle.textContent = 'Sign in with your mobile number & password';
+        submitBtn.textContent = 'Sign In';
+        tabLogin.className = 'py-2 rounded-lg bg-white shadow-xs text-slate-950 transition cursor-pointer';
+        tabSignup.className = 'py-2 rounded-lg text-slate-500 hover:text-slate-900 transition cursor-pointer';
+        headerIcon.className = 'fa-solid fa-store';
+      } else {
+        nameContainer.classList.remove('hidden');
+        document.getElementById('auth-name').setAttribute('required', 'true');
+        title.textContent = 'Create Account';
+        subtitle.textContent = 'Sign up with your mobile number and create a password';
+        submitBtn.textContent = 'Register Account';
+        tabSignup.className = 'py-2 rounded-lg bg-white shadow-xs text-slate-950 transition cursor-pointer';
+        tabLogin.className = 'py-2 rounded-lg text-slate-500 hover:text-slate-900 transition cursor-pointer';
+        headerIcon.className = 'fa-solid fa-user-plus';
+      }
+    }
+
+    document.getElementById('auth-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const identifier = document.getElementById('auth-identifier').value.trim();
+      const password = document.getElementById('auth-password').value;
+      const name = document.getElementById('auth-name').value.trim();
+
+      try {
+        let data;
+        if (isLoginMode) {
+          data = await GroceryAPI.login(identifier, password);
+        } else {
+          data = await GroceryAPI.signup(name, identifier, password);
+        }
+
+        localStorage.setItem('mfd_user', JSON.stringify(data.user));
+        alert(isLoginMode ? 'Login successful!' : 'Registration successful!');
+        
+        if (data.user.role === 'admin') {
+          window.location.href = '../admin/admin.html';
+        } else {
+          window.location.href = 'index.html';
+        }
+      } catch (err) {
+        console.error('Auth submission error:', err);
+        alert(err.message || 'Network error connecting to server. Make sure backend is running on port 5000.');
+      }
+    });
+  </script>
+</body>
+</html>

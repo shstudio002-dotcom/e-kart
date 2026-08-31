@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>MF Dari Grocery - Inventory & Pricing</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Kannada:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: { fontFamily: { sans: ['Inter', 'Noto Sans Kannada', 'sans-serif'] } }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', 'Noto Sans Kannada', sans-serif; -webkit-tap-highlight-color: transparent; }
+    .custom-scrollbar::-webkit-scrollbar { height: 6px; width: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-900 pb-28 md:pb-12 min-h-screen flex flex-col antialiased">
+
+  <header class="bg-slate-900 text-white sticky top-0 z-30 border-b border-slate-800 shadow-md">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 sm:w-10 sm:h-10 bg-emerald-500 text-slate-950 rounded-xl flex items-center justify-center font-black text-base sm:text-lg shadow-sm">
+          <i class="fa-solid fa-store-slash"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-1.5">
+            <h1 class="text-sm sm:text-lg font-black tracking-tight leading-none">MF Dari Admin</h1>
+            <span class="text-[9px] sm:text-[10px] font-bold text-emerald-400 bg-emerald-950/80 px-1 py-0.5 rounded border border-emerald-800 leading-none">Hub</span>
+          </div>
+          <p class="text-[10px] sm:text-[11px] text-slate-400 font-mono mt-0.5">Inventory & Pricing</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <a href="../frontend/index.html" target="_blank" class="px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 flex items-center gap-1.5 transition">
+          <i class="fa-solid fa-arrow-up-right-from-square text-[11px]"></i>
+          <span class="hidden sm:inline">Store View</span>
+        </a>
+        <button onclick="renderAdminProducts(true)" class="px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white flex items-center gap-1.5 shadow-sm transition">
+          <i class="fa-solid fa-rotate text-xs"></i>
+          <span class="hidden sm:inline">Sync</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="hidden md:flex max-w-7xl mx-auto px-6 items-center gap-2 border-t border-slate-800 text-xs py-2">
+      <a href="admin.html" class="px-4 py-1.5 rounded-lg font-semibold bg-slate-800 text-slate-300 hover:text-white transition flex items-center gap-1.5">
+        <i class="fa-solid fa-truck-ramp-box"></i> Live Orders (<span class="orders-count-badge">0</span>)
+      </a>
+      <a href="inventory.html" class="px-4 py-1.5 rounded-lg font-bold bg-emerald-600 text-white transition flex items-center gap-1.5">
+        <i class="fa-solid fa-boxes-stacked"></i> Products Inventory (<span class="products-count-badge">0</span>)
+      </a>
+      <a href="add-product.html" class="px-4 py-1.5 rounded-lg font-semibold bg-slate-800 text-slate-300 hover:text-white transition flex items-center gap-1.5">
+        <i class="fa-solid fa-plus"></i> Add Product SKU
+      </a>
+      <a href="offers.html" class="px-4 py-1.5 rounded-lg font-semibold bg-slate-800 text-slate-300 hover:text-white transition flex items-center gap-1.5">
+        <i class="fa-solid fa-tag"></i> Store Offers & Banner
+      </a>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-3 sm:px-6 py-4 flex-grow w-full space-y-3">
+    <div class="flex items-center justify-between gap-2 border-b border-slate-200 pb-2">
+      <div>
+        <h2 class="text-base sm:text-lg font-black text-slate-900 flex items-center gap-1.5">
+          <i class="fa-solid fa-boxes-stacked text-emerald-600"></i> Store Products & Price Manager
+        </h2>
+        <p class="text-[11px] text-slate-500">Edit base prices directly or remove items from the catalog.</p>
+      </div>
+    </div>
+
+    <!-- Mobile Product Cards -->
+    <div id="mobile-product-cards-container" class="space-y-2.5 md:hidden"></div>
+
+    <!-- Desktop Product Table -->
+    <div class="hidden md:block bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="bg-slate-50 text-slate-600 text-[11px] uppercase tracking-wider font-bold border-b border-slate-200">
+            <th class="py-3 px-4">Item (Kannada / English)</th>
+            <th class="py-3 px-3">Category</th>
+            <th class="py-3 px-3">Base Unit Price (₹)</th>
+            <th class="py-3 px-3">Pack Options</th>
+            <th class="py-3 px-4 text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="admin-product-table-body" class="divide-y divide-slate-100 text-xs sm:text-sm"></tbody>
+      </table>
+    </div>
+  </main>
+
+  <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-slate-900 border-t border-slate-800 grid grid-cols-4 px-2 py-2 z-40 shadow-2xl items-center text-center">
+    <a href="admin.html" class="flex flex-col items-center justify-center py-1 text-slate-400 font-semibold text-[10px]">
+      <i class="fa-solid fa-truck-ramp-box text-base"></i>
+      <span class="mt-1">Orders</span>
+    </a>
+
+    <a href="inventory.html" class="flex flex-col items-center justify-center py-1 text-emerald-400 font-bold text-[10px]">
+      <div class="relative">
+        <i class="fa-solid fa-boxes-stacked text-base"></i>
+        <span class="products-count-badge absolute -top-1 -right-3 bg-emerald-500 text-slate-950 text-[9px] font-black rounded-full h-3.5 min-w-[14px] px-0.5 flex items-center justify-center">0</span>
+      </div>
+      <span class="mt-1">Inventory</span>
+    </a>
+
+    <a href="add-product.html" class="flex flex-col items-center justify-center py-1 text-slate-400 font-semibold text-[10px]">
+      <i class="fa-solid fa-plus-circle text-base"></i>
+      <span class="mt-1">Add SKU</span>
+    </a>
+
+    <a href="offers.html" class="flex flex-col items-center justify-center py-1 text-slate-400 font-semibold text-[10px]">
+      <i class="fa-solid fa-tag text-base"></i>
+      <span class="mt-1">Offers</span>
+    </a>
+  </nav>
+
+  <script src="admin-api.js"></script>
+  <script>
+    async function renderAdminProducts(manual = false) {
+      const products = await AdminAPI.getProducts();
+      const orders = await AdminAPI.getOrders();
+
+      document.querySelectorAll('.products-count-badge').forEach(el => el.textContent = products.length);
+      document.querySelectorAll('.orders-count-badge').forEach(el => el.textContent = orders.length);
+
+      const tbody = document.getElementById('admin-product-table-body');
+      tbody.innerHTML = '';
+      products.forEach(p => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-50 transition border-b border-slate-100';
+        tr.innerHTML = `
+          <td class="py-3 px-4">
+            <div class="font-bold text-slate-900">${p.nameKan}</div>
+            <div class="text-[11px] text-slate-500">(${p.nameEng})</div>
+          </td>
+          <td class="py-3 px-3">
+            <span class="capitalize text-[11px] font-semibold bg-slate-100 text-slate-700 px-2 py-0.5 rounded">${p.category}</span>
+          </td>
+          <td class="py-3 px-3">
+            <div class="flex items-center gap-1">
+              <span class="text-xs">₹</span>
+              <input type="number" min="1" value="${p.basePriceKg}" onchange="handlePriceUpdate('${p._id || p.id}', this.value)" class="w-16 px-2 py-1 bg-white border border-slate-200 rounded-lg text-xs font-bold text-emerald-700 focus:outline-none" />
+            </div>
+          </td>
+          <td class="py-3 px-3 text-[11px] text-slate-500">
+            ${(p.unitOptions || []).map(u => u.label).join(', ')}
+          </td>
+          <td class="py-3 px-4 text-right">
+            <button onclick="handleDeleteProduct('${p._id || p.id}')" class="text-xs text-rose-600 hover:text-rose-800 font-bold bg-rose-50 px-2.5 py-1 rounded-lg border border-rose-200">
+              <i class="fa-solid fa-trash mr-1"></i> Remove
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      const mobContainer = document.getElementById('mobile-product-cards-container');
+      mobContainer.innerHTML = '';
+      products.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'bg-white p-3 rounded-2xl border border-slate-200 shadow-xs space-y-2';
+        card.innerHTML = `
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <div class="font-bold text-slate-900 text-xs">${p.nameKan} <span class="font-normal text-slate-500">(${p.nameEng})</span></div>
+              <span class="text-[10px] font-semibold bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded capitalize">${p.category}</span>
+            </div>
+            <button onclick="handleDeleteProduct('${p._id || p.id}')" class="text-rose-600 p-1.5 text-xs rounded-lg bg-rose-50 border border-rose-200">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </div>
+          <div class="flex items-center justify-between border-t border-slate-100 pt-2 text-xs">
+            <span class="text-slate-500 text-[11px]">Base Unit Price:</span>
+            <div class="flex items-center gap-1">
+              <span class="font-bold text-emerald-700">₹</span>
+              <input type="number" min="1" value="${p.basePriceKg}" onchange="handlePriceUpdate('${p._id || p.id}', this.value)" class="w-16 px-2 py-1 bg-slate-50 border border-slate-200 rounded-lg text-xs font-bold text-emerald-700 text-center focus:outline-none" />
+            </div>
+          </div>
+        `;
+        mobContainer.appendChild(card);
+      });
+
+      if (manual) alert('Inventory updated.');
+    }
+
+    async function handlePriceUpdate(id, newPrice) {
+      await AdminAPI.updateProductPrice(id, newPrice);
+      renderAdminProducts();
+    }
+
+    async function handleDeleteProduct(id) {
+      if (confirm('Delete this product from catalog?')) {
+        await AdminAPI.deleteProduct(id);
+        renderAdminProducts();
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', renderAdminProducts);
+  </script>
+</body>
+</html>

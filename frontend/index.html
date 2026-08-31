@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>MF Dari Grocery - Home (Catalog)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Kannada:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'Noto Sans Kannada', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Inter', 'Noto Sans Kannada', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar { height: 6px; width: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 pb-36 min-h-screen flex flex-col antialiased">
+
+  <!-- Authentication Check Gate: Redirects to login if not authenticated -->
+  <script>
+    const authUser = JSON.parse(localStorage.getItem('mfd_user'));
+    if (!authUser) {
+      window.location.href = 'login.html';
+    }
+  </script>
+
+  <!-- Top Announcement Bar -->
+  <div class="bg-gradient-to-r from-emerald-800 via-emerald-700 to-teal-800 text-white px-3 py-2 text-xs font-medium sticky top-0 z-40 shadow-xs">
+    <div class="max-w-6xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-1.5 truncate">
+        <span class="relative flex h-2 w-2">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-amber-400"></span>
+        </span>
+        <span class="truncate"><strong class="text-amber-300">Get grocery in 30 to 40 mins</strong> • Under 1 hr guaranteed</span>
+      </div>
+      <span class="bg-black/30 px-2 py-0.5 rounded text-[10px] font-mono whitespace-nowrap ml-2 flex items-center gap-1">
+        <i class="fa-solid fa-store text-amber-300"></i> Shivamogga Hub
+      </span>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="bg-white border-b border-slate-200 sticky top-8 z-30 shadow-xs">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-2.5">
+        <div class="w-10 h-10 bg-emerald-600 text-white rounded-xl flex items-center justify-center shadow-md shadow-emerald-200">
+          <i class="fa-solid fa-basket-shopping text-lg"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-1.5">
+            <h1 class="text-base sm:text-lg font-black tracking-tight leading-none text-slate-900">MF Dari Grocery</h1>
+            <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200 leading-none">ಆಹಾರ ತಾಣ</span>
+          </div>
+          <p class="text-[11px] text-slate-500 font-medium">Daily Fresh & Farm Direct Supplies</p>
+        </div>
+      </a>
+
+      <!-- User Greeting & Logout -->
+      <div class="flex items-center gap-3">
+        <span id="nav-user-greeting" class="text-xs font-bold text-slate-700 hidden sm:inline-block"></span>
+        <button onclick="handleLogout()" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition flex items-center gap-1.5 cursor-pointer">
+          <i class="fa-solid fa-right-from-bracket text-xs"></i><span>Logout</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="max-w-6xl mx-auto px-3 sm:px-6 py-4 space-y-4 flex-grow w-full">
+
+    <!-- Dynamic Offer Banner Controlled via Backend -->
+    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-800 to-teal-800 text-white p-4 sm:p-6 shadow-md">
+      <div class="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div class="space-y-1">
+          <span id="cust-banner-tag" class="text-[10px] font-black uppercase tracking-wider bg-amber-400 text-slate-950 px-2 py-0.5 rounded-md inline-block">OFFER OF ANY</span>
+          <h2 id="cust-banner-title" class="text-xl sm:text-2xl font-black">Flat 20% OFF Daily Groceries!</h2>
+          <p id="cust-banner-subtitle" class="text-xs text-emerald-100">Fresh farm staples, rice, dairy & organic produce delivered in 30-40 mins.</p>
+        </div>
+        <div class="bg-white/10 backdrop-blur-md px-3 py-2 rounded-xl border border-white/20 text-center flex items-center gap-3 self-stretch sm:self-auto justify-around">
+          <div>
+            <span id="cust-banner-fee" class="block text-base sm:text-lg font-black text-amber-300">₹0</span>
+            <span class="text-[10px] text-emerald-100 uppercase">Delivery</span>
+          </div>
+          <div class="h-6 w-px bg-white/20"></div>
+          <div>
+            <span id="cust-banner-speed" class="block text-base sm:text-lg font-black text-white">35m</span>
+            <span class="text-[10px] text-emerald-100 uppercase">Speed</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search and Category Filters -->
+    <div class="bg-white p-3 sm:p-4 rounded-2xl border border-slate-200 shadow-xs space-y-3">
+      <div class="relative">
+        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+        <input 
+          type="text" 
+          id="search-input" 
+          oninput="handleSearch(this.value)" 
+          placeholder="Search of all (ಅಕ್ಕಿ, Rice, Dal, Eggs, Sugar, Oil...)" 
+          class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 transition"
+        />
+      </div>
+
+      <div class="flex items-center gap-2 overflow-x-auto no-scrollbar text-xs">
+        <button onclick="setCategory('all', this)" class="cat-pill whitespace-nowrap px-3.5 py-1.5 rounded-xl font-bold bg-emerald-600 text-white shadow-xs transition">All Items</button>
+        <button onclick="setCategory('grains', this)" class="cat-pill whitespace-nowrap px-3.5 py-1.5 rounded-xl font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">Grains & Pulses</button>
+        <button onclick="setCategory('dairy', this)" class="cat-pill whitespace-nowrap px-3.5 py-1.5 rounded-xl font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">Dairy & Eggs</button>
+        <button onclick="setCategory('staples', this)" class="cat-pill whitespace-nowrap px-3.5 py-1.5 rounded-xl font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">Staples & Oils</button>
+      </div>
+    </div>
+
+    <!-- Product Catalog Table in Editable Format -->
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+      <div class="p-3.5 sm:p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+        <div>
+          <h3 class="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2">
+            <i class="fa-solid fa-boxes-stacked text-emerald-600"></i> Grocery Catalog (ಆಹಾರ ಪದಾರ್ಥಗಳು)
+          </h3>
+          <p class="text-[11px] text-slate-500">Edit unit & quantity directly to recalculate order totals</p>
+        </div>
+        <span class="text-[11px] font-semibold bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-full border border-emerald-200">
+          <span id="items-count">0</span> Items Available
+        </span>
+      </div>
+
+      <div class="overflow-x-auto custom-scrollbar">
+        <table class="w-full text-left border-collapse min-w-[580px] sm:min-w-full">
+          <thead>
+            <tr class="bg-slate-100/75 text-slate-600 text-[11px] uppercase tracking-wider font-bold border-b border-slate-200">
+              <th class="py-3 px-3 sm:px-4">Product (ಉತ್ಪನ್ನ)</th>
+              <th class="py-3 px-3">Unit (kg / gm / pack)</th>
+              <th class="py-3 px-3 text-center">How Many (ಪ್ರಮಾಣ)</th>
+              <th class="py-3 px-3 text-right">Unit Price</th>
+              <th class="py-3 px-3 sm:px-4 text-right">Subtotal</th>
+            </tr>
+          </thead>
+          <tbody id="catalog-table-body" class="divide-y divide-slate-100 text-xs sm:text-sm">
+            <!-- Dynamically populated via backend -->
+          </tbody>
+          <tfoot>
+            <tr class="bg-emerald-50/90 border-t-2 border-emerald-200 font-bold">
+              <td colspan="4" class="py-3.5 px-3 sm:px-4 text-right text-slate-800 text-xs sm:text-sm">
+                Total Amount (ಒಟ್ಟು ಮೊತ್ತ):
+              </td>
+              <td class="py-3.5 px-3 sm:px-4 text-right text-emerald-800 text-base sm:text-xl font-black" id="table-grand-total">
+                ₹0
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <div class="p-3 sm:p-4 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div class="flex items-center gap-2 text-[11px] text-slate-500">
+          <i class="fa-solid fa-shield-halved text-emerald-600"></i>
+          <span>100% Quality & doorstep guarantee</span>
+        </div>
+        <button 
+          onclick="addCatalogToCartAndRedirect()" 
+          class="w-full sm:w-auto px-6 py-3 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold rounded-xl shadow-md shadow-emerald-200 flex items-center justify-center gap-2 text-xs sm:text-sm transition duration-150 cursor-pointer"
+        >
+          <span>Total & Add to Cart (Redirect to Cart)</span>
+          <i class="fa-solid fa-arrow-right text-xs"></i>
+        </button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Universal Bottom Navigation Bar -->
+  <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40 shadow-xl py-2.5">
+    <div class="max-w-xl mx-auto grid grid-cols-4 px-3 items-center gap-2 text-center">
+      <a href="index.html" class="flex flex-col items-center justify-center py-1 text-green-700 font-bold text-xs bg-green-50 rounded-xl">
+        <span class="text-base leading-none">🏠</span><span class="mt-1">Home</span>
+      </a>
+      <a href="cart.html" class="flex flex-col items-center justify-center py-1 text-gray-600 hover:text-green-700 font-semibold text-xs">
+        <span class="text-base leading-none">🛒</span><span class="mt-1">Cart</span>
+      </a>
+      <a href="orders.html" class="flex flex-col items-center justify-center py-1 text-gray-600 hover:text-green-700 font-semibold text-xs">
+        <span class="text-base leading-none">📦</span><span class="mt-1">Orders</span>
+      </a>
+      <a href="profile.html" class="flex flex-col items-center justify-center py-1 text-gray-600 hover:text-green-700 font-semibold text-xs">
+        <span class="text-base leading-none">👤</span><span class="mt-1">Profile</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- External API Bridge -->
+  <script src="api.js"></script>
+
+  <script>
+    let products = [];
+    let currentCategory = 'all';
+    let searchQuery = '';
+
+    // Display user greeting if available
+    const currentUser = JSON.parse(localStorage.getItem('mfd_user'));
+    if (currentUser && currentUser.name) {
+      const greetingEl = document.getElementById('nav-user-greeting');
+      if (greetingEl) {
+        greetingEl.textContent = `Hello, ${currentUser.name}`;
+      }
+    }
+
+    function handleLogout() {
+      localStorage.removeItem('mfd_user');
+      window.location.href = 'login.html';
+    }
+
+    // Initial Load via api.js
+    async function initCatalog() {
+      const liveOffer = await GroceryAPI.getOffer();
+      if (liveOffer) {
+        document.getElementById('cust-banner-tag').textContent = liveOffer.tag || 'OFFER OF ANY';
+        document.getElementById('cust-banner-title').textContent = liveOffer.title || 'Flat 20% OFF Daily Groceries!';
+        document.getElementById('cust-banner-subtitle').textContent = liveOffer.subtitle || 'Fresh farm staples, rice, dairy & organic produce delivered in 30-40 mins.';
+        document.getElementById('cust-banner-fee').textContent = liveOffer.deliveryFee || '₹0';
+        document.getElementById('cust-banner-speed').textContent = liveOffer.speed || '35m';
+      }
+
+      const backendProducts = await GroceryAPI.getProducts();
+      products = (backendProducts || []).map(p => ({
+        ...p,
+        id: p._id || p.id,
+        unitOptions: (p.unitOptions && p.unitOptions.length > 0) ? p.unitOptions : [
+          { label: '500 gm', multiplier: 0.5 },
+          { label: '1 kg', multiplier: 1.0 },
+          { label: '2 kg', multiplier: 2.0 },
+          { label: '5 kg', multiplier: 5.0 }
+        ],
+        selectedUnitIndex: p.selectedUnitIndex !== undefined ? p.selectedUnitIndex : 1,
+        quantity: 0
+      }));
+
+      renderTable();
+      updateTotalDisplays();
+    }
+
+    function getItemPrice(prod) {
+      const unit = prod.unitOptions[prod.selectedUnitIndex] || { multiplier: 1.0 };
+      return Math.round(prod.basePriceKg * unit.multiplier);
+    }
+
+    function calculateCatalogTotal() {
+      return products.reduce((acc, p) => {
+        return acc + (p.quantity > 0 ? (getItemPrice(p) * p.quantity) : 0);
+      }, 0);
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('catalog-table-body');
+      tbody.innerHTML = '';
+
+      const filtered = products.filter(p => {
+        const matchesCat = (currentCategory === 'all' || p.category === currentCategory);
+        const matchesSearch = p.nameEng.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                            p.nameKan.toLowerCase().includes(searchQuery.toLowerCase());
+        return matchesCat && matchesSearch;
+      });
+
+      document.getElementById('items-count').textContent = filtered.length;
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5" class="py-8 text-center text-slate-400 text-xs">
+              <i class="fa-solid fa-magnifying-glass text-2xl mb-1 text-slate-300 block"></i>
+              No groceries found matching "${searchQuery}".
+            </td>
+          </tr>
+        `;
+        updateTotalDisplays();
+        return;
+      }
+
+      filtered.forEach(p => {
+        const currentPrice = getItemPrice(p);
+        const subtotal = currentPrice * p.quantity;
+        const tr = document.createElement('tr');
+        tr.className = `hover:bg-slate-50 transition ${p.quantity > 0 ? 'bg-emerald-50/40 font-medium' : ''}`;
+
+        tr.innerHTML = `
+          <td class="py-3 px-3 sm:px-4">
+            <div class="flex items-center gap-2">
+              <div class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center text-xs font-bold flex-shrink-0">
+                <i class="fa-solid fa-leaf"></i>
+              </div>
+              <div>
+                <span class="font-bold text-slate-900 block leading-tight">${p.nameKan}</span>
+                <span class="text-[11px] text-slate-500 font-normal leading-tight">(${p.nameEng})</span>
+              </div>
+            </div>
+          </td>
+
+          <td class="py-3 px-3">
+            <select 
+              onchange="changeProductUnit('${p.id}', this.value)" 
+              class="bg-white border border-slate-200 text-xs rounded-lg px-2 py-1 font-medium text-slate-700 focus:ring-2 focus:ring-emerald-500 focus:outline-none shadow-2xs cursor-pointer"
+            >
+              ${p.unitOptions.map((u, idx) => `
+                <option value="${idx}" ${idx === p.selectedUnitIndex ? 'selected' : ''}>
+                  ${u.label}
+                </option>
+              `).join('')}
+            </select>
+          </td>
+
+          <td class="py-3 px-3 text-center">
+            <div class="inline-flex items-center border border-slate-200 bg-white rounded-xl shadow-2xs p-0.5">
+              <button 
+                onclick="updateQuantity('${p.id}', -1)" 
+                class="w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-600 font-bold active:scale-90 transition text-xs cursor-pointer"
+              >
+                <i class="fa-solid fa-minus"></i>
+              </button>
+              <input 
+                type="number" 
+                min="0" 
+                max="99" 
+                value="${p.quantity}" 
+                oninput="setManualQuantity('${p.id}', this.value)" 
+                class="w-8 sm:w-10 text-center text-xs font-bold text-slate-800 border-none focus:outline-none bg-transparent"
+              />
+              <button 
+                onclick="updateQuantity('${p.id}', 1)" 
+                class="w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center rounded-lg hover:bg-emerald-50 text-emerald-700 font-bold active:scale-90 transition text-xs cursor-pointer"
+              >
+                <i class="fa-solid fa-plus"></i>
+              </button>
+            </div>
+          </td>
+
+          <td class="py-3 px-3 text-right font-semibold text-slate-700 text-xs sm:text-sm">
+            ₹${currentPrice}
+          </td>
+
+          <td class="py-3 px-3 sm:px-4 text-right font-bold ${p.quantity > 0 ? 'text-emerald-700 text-xs sm:text-base' : 'text-slate-400 text-xs'}">
+            ₹${subtotal}
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      updateTotalDisplays();
+    }
+
+    function changeProductUnit(prodId, unitIndex) {
+      const prod = products.find(p => p.id === prodId);
+      if (prod) {
+        prod.selectedUnitIndex = parseInt(unitIndex, 10);
+        renderTable();
+      }
+    }
+
+    function updateQuantity(prodId, change) {
+      const prod = products.find(p => p.id === prodId);
+      if (prod) {
+        prod.quantity = Math.max(0, prod.quantity + change);
+        renderTable();
+      }
+    }
+
+    function setManualQuantity(prodId, val) {
+      const prod = products.find(p => p.id === prodId);
+      if (prod) {
+        const parsed = parseInt(val, 10);
+        prod.quantity = isNaN(parsed) || parsed < 0 ? 0 : parsed;
+        renderTable();
+      }
+    }
+
+    function updateTotalDisplays() {
+      const grandTotal = calculateCatalogTotal();
+      document.getElementById('table-grand-total').textContent = `₹${grandTotal}`;
+      const totalItemsCount = products.filter(p => p.quantity > 0).reduce((sum, p) => sum + p.quantity, 0);
+      document.querySelectorAll('.cart-badge-count').forEach(el => el.textContent = totalItemsCount);
+    }
+
+    function handleSearch(query) {
+      searchQuery = query;
+      renderTable();
+    }
+
+    function setCategory(cat, btn) {
+      currentCategory = cat;
+      document.querySelectorAll('.cat-pill').forEach(b => {
+        b.className = 'cat-pill whitespace-nowrap px-3.5 py-1.5 rounded-xl font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition';
+      });
+      btn.className = 'cat-pill whitespace-nowrap px-3.5 py-1.5 rounded-xl font-bold bg-emerald-600 text-white shadow-xs transition';
+      renderTable();
+    }
+
+    function addCatalogToCartAndRedirect() {
+      const selected = products.filter(p => p.quantity > 0);
+      if (selected.length === 0) {
+        alert('Please select at least 1 item with quantity > 0 before proceeding.');
+        return;
+      }
+
+      const cartSnapshot = selected.map(p => {
+        const unit = p.unitOptions[p.selectedUnitIndex] || { label: '1 kg' };
+        const price = getItemPrice(p);
+        return {
+          productId: p.id,
+          name: `${p.nameKan} (${p.nameEng})`,
+          unit: unit.label,
+          qty: p.quantity,
+          price: price,
+          subtotal: price * p.quantity
+        };
+      });
+
+      localStorage.setItem('mfd_cart', JSON.stringify(cartSnapshot));
+      window.location.href = 'cart.html';
+    }
+
+    window.addEventListener('DOMContentLoaded', initCatalog);
+  </script>
+</body>
+</html>

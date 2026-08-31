@@ -1,0 +1,236 @@
+<!-- frontend/orders.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>MF Dari Grocery - Live Order Tracking</title>
+  
+  <!-- Non-blocking precompiled stylesheet -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" />
+  
+  <style>
+    body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+    .rider-bike { transition: left 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900 pb-32 min-h-screen flex flex-col antialiased">
+
+  <!-- Header -->
+  <header class="bg-white border-b border-gray-200 sticky top-0 z-30 shadow-xs">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <a href="index.html" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-700 hover:bg-gray-200 font-bold text-sm">
+          ←
+        </a>
+        <div>
+          <h1 class="text-base font-black text-gray-900 leading-tight">Your Orders (ನಿಮ್ಮ ಆದೇಶಗಳು)</h1>
+          <p class="text-xs text-gray-500">Live straight-line tracking • 30-40 min ETA</p>
+        </div>
+      </div>
+      <button onclick="renderOrdersFast()" class="flex items-center gap-1.5 text-xs font-bold text-green-700 bg-green-50 border border-green-200 px-3 py-1 rounded-full active:scale-95 transition">
+        <span class="h-2 w-2 rounded-full bg-green-500 animate-ping inline-block mr-1"></span> Live Sync
+      </button>
+    </div>
+  </header>
+
+  <!-- Orders Container (Immediate Paint) -->
+  <main class="max-w-4xl mx-auto px-3 sm:px-6 py-4 space-y-4 flex-grow w-full">
+    <div id="orders-container" class="space-y-4"></div>
+  </main>
+
+  <!-- Bottom Navigation -->
+  <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40 shadow-xl py-2.5">
+    <div class="max-w-xl mx-auto grid grid-cols-4 px-3 items-center gap-2 text-center">
+      <a href="index.html" class="flex flex-col items-center justify-center py-1 text-gray-600 hover:text-green-700 font-semibold text-xs">
+        <span class="text-base leading-none">🏠</span><span class="mt-1">Home</span>
+      </a>
+      <a href="cart.html" class="flex flex-col items-center justify-center py-1 text-gray-600 hover:text-green-700 font-semibold text-xs">
+        <span class="text-base leading-none">🛒</span><span class="mt-1">Cart</span>
+      </a>
+      <a href="orders.html" class="flex flex-col items-center justify-center py-1 text-green-700 font-bold text-xs bg-green-50 rounded-xl">
+        <span class="text-base leading-none">📦</span><span class="mt-1">Orders</span>
+      </a>
+      <a href="profile.html" class="flex flex-col items-center justify-center py-1 text-gray-600 hover:text-green-700 font-semibold text-xs">
+        <span class="text-base leading-none">👤</span><span class="mt-1">Profile</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- Scripts placed at the bottom so HTML is never blocked -->
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js" defer></script>
+
+  <script>
+    const ROUTE_POINTS = [
+      { key: 'point_hub', label: '1. Hub (0%)', pct: '5%', badge: 'Started at Hub' },
+      { key: 'point_packed', label: '2. Picked (35%)', pct: '35%', badge: 'On Route' },
+      { key: 'point_nearby', label: '3. Near Area (70%)', pct: '70%', badge: 'Arriving Soon' },
+      { key: 'point_doorstep', label: '4. Delivered (100%)', pct: '100%', badge: 'Delivered' }
+    ];
+
+    function getPointIndex(status) {
+      if (!status) return 0;
+      if (status === 'point_doorstep' || status === 'Delivered') return 3;
+      if (status === 'point_nearby') return 2;
+      if (status === 'point_packed' || status === 'Packing Groceries' || status === 'Out for Delivery (30-40m)') return 1;
+      return 0;
+    }
+
+    // Immediate 0ms paint from local storage
+    function renderOrdersFast() {
+      const container = document.getElementById('orders-container');
+      if (!container) return;
+
+      let orders = [];
+      try {
+        orders = JSON.parse(localStorage.getItem('mfd_orders')) || [];
+        const lastOrder = JSON.parse(localStorage.getItem('mfd_last_order'));
+        if (lastOrder && !orders.some(o => (o.orderId || o.id) === (lastOrder.orderId || lastOrder.id))) {
+          orders.unshift(lastOrder);
+        }
+      } catch(e) {}
+
+      // Filter out invalid/empty placeholder orders so blank states work properly
+      orders = orders.filter(o => o && (o.orderId || o.id || o._id) && Array.isArray(o.items) && o.items.length > 0);
+      localStorage.setItem('mfd_orders', JSON.stringify(orders));
+
+      if (orders.length === 0) {
+        localStorage.removeItem('mfd_last_order');
+        container.innerHTML = `
+          <div class="bg-white rounded-2xl border border-gray-200 p-8 text-center text-gray-400 space-y-2">
+            <div class="text-4xl text-gray-300">📦</div>
+            <h3 class="text-sm font-bold text-gray-800">You have not ordered anything yet</h3>
+            <p class="text-xs">Order groceries to see live dispatch tracking here.</p>
+          </div>
+        `;
+        return;
+      }
+
+      // Sort orders: active/non-delivered orders come first, delivered orders sink to the bottom
+      orders.sort((a, b) => {
+        const aDelivered = (a.status === 'point_doorstep' || a.status === 'Delivered');
+        const bDelivered = (b.status === 'point_doorstep' || b.status === 'Delivered');
+        if (aDelivered === bDelivered) return 0;
+        return aDelivered ? 1 : -1;
+      });
+
+      container.innerHTML = '';
+
+      orders.forEach((order, index) => {
+        const isDelivered = order.status === 'point_doorstep' || order.status === 'Delivered';
+        const isLive = !isDelivered && (index === 0 || !orders.slice(0, index).some(o => o.status !== 'point_doorstep' && o.status !== 'Delivered'));
+        
+        const activePointIdx = getPointIndex(order.status);
+        const pointData = ROUTE_POINTS[activePointIdx];
+        const orderItems = Array.isArray(order.items) ? order.items : [];
+        const orderId = order.orderId || order.id || 'MFD-00000';
+        
+        let orderTime = 'Today';
+        if (order.createdAt) {
+          try {
+            orderTime = new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          } catch(e){}
+        }
+
+        const card = document.createElement('div');
+        card.className = `bg-white rounded-2xl border ${isLive ? 'border-green-500 shadow-md ring-2 ring-green-50' : isDelivered ? 'border-gray-200 opacity-80' : 'border-gray-200'} p-4 space-y-3`;
+
+        card.innerHTML = `
+          <div class="flex justify-between items-start border-b border-gray-100 pb-2">
+            <div>
+              <div class="flex items-center gap-1.5">
+                <span class="text-xs font-mono font-black text-gray-900 bg-gray-100 px-2 py-0.5 rounded">#${orderId}</span>
+                <span class="text-xs font-bold px-2 py-0.5 rounded-full ${isLive ? 'bg-green-100 text-green-800' : isDelivered ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-gray-100 text-gray-600'}">
+                  ${isDelivered ? '✔ Delivered Successfully' : pointData.badge}
+                </span>
+              </div>
+              <p class="text-xs text-gray-400 mt-1">🕒 ${orderTime}</p>
+            </div>
+            <span class="text-base font-black text-green-700">₹${order.totalAmount || 0}</span>
+          </div>
+
+          <!-- Straight-Line Tracker -->
+          <div class="${isDelivered ? 'bg-slate-800' : 'bg-gray-900'} text-white rounded-xl p-3.5 space-y-3">
+            <div class="flex justify-between items-center text-xs">
+              <span class="${isDelivered ? 'text-emerald-400' : 'text-green-400'} font-bold">📍 ${pointData.label}</span>
+              <span class="text-xs text-gray-400">${isDelivered ? 'Completed' : 'ETA: 30-40 Mins'}</span>
+            </div>
+
+            <div class="relative pt-3 pb-1">
+              <div class="w-full h-2 bg-gray-800 rounded-full overflow-hidden border border-gray-700">
+                <div class="h-full bg-gradient-to-r ${isDelivered ? 'from-emerald-500 to-emerald-400' : 'from-green-500 to-green-400'} rounded-full" style="width: ${pointData.pct};"></div>
+              </div>
+              <div class="rider-bike absolute -top-1.5" style="left: calc(${pointData.pct} - 14px);">
+                <div class="w-7 h-7 rounded-full ${isDelivered ? 'bg-emerald-400' : 'bg-yellow-400'} text-gray-950 flex items-center justify-center shadow font-bold text-xs">
+                  ${isDelivered ? '✓' : '🛵'}
+                </div>
+              </div>
+              <div class="flex justify-between text-xs text-gray-400 mt-2 font-medium">
+                <span>Hub (0%)</span><span>Picked (35%)</span><span>Near Area (70%)</span><span>Delivered (100%)</span>
+              </div>
+            </div>
+
+            <div class="text-xs text-gray-300 bg-white bg-opacity-10 p-2 rounded-lg truncate">
+              🏠 Drop: ${order.address || 'Address provided'}
+            </div>
+          </div>
+
+          <!-- Items Breakdown -->
+          <div class="bg-gray-50 rounded-xl p-2.5 space-y-1 text-xs border border-gray-100">
+            ${orderItems.map(it => `
+              <div class="flex justify-between items-center text-gray-700 text-xs py-0.5 border-b border-gray-100 last:border-0">
+                <span><strong>${it.name || 'Item'}</strong> (${it.unit || '1 unit'}) × ${it.qty || 1}</span>
+                <span class="font-bold text-gray-900">₹${it.subtotal || it.price || 0}</span>
+              </div>
+            `).join('')}
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // Step 1: Render immediately from memory cache (0ms)
+    renderOrdersFast();
+
+    // Step 2: Background asynchronous connection setup
+    window.addEventListener('load', () => {
+      const BACKEND_URL = window.location.origin.includes('localhost') ? 'http://localhost:5000' : window.location.origin;
+      
+      // Background REST revalidation
+      fetch(`${BACKEND_URL}/api/orders`)
+        .then(res => res.json())
+        .then(apiOrders => {
+          if (Array.isArray(apiOrders)) {
+            if (apiOrders.length === 0) {
+              localStorage.removeItem('mfd_orders');
+              localStorage.removeItem('mfd_last_order');
+            } else {
+              localStorage.setItem('mfd_orders', JSON.stringify(apiOrders));
+              const lastOrder = JSON.parse(localStorage.getItem('mfd_last_order'));
+              const serverIds = new Set(apiOrders.map(o => o.orderId || o.id));
+              if (lastOrder && !serverIds.has(lastOrder.orderId || lastOrder.id)) {
+                localStorage.removeItem('mfd_last_order');
+              }
+            }
+            renderOrdersFast();
+          }
+        })
+        .catch(() => {});
+
+      // Background WebSocket initialization
+      if (typeof io !== 'undefined') {
+        const socket = io(BACKEND_URL, { transports: ['websocket'], upgrade: false });
+        socket.on('order_status_updated', (data) => {
+          let orders = JSON.parse(localStorage.getItem('mfd_orders')) || [];
+          const ord = orders.find(o => (o.orderId || o.id) === data.orderId);
+          if (ord) {
+            ord.status = data.status;
+            localStorage.setItem('mfd_orders', JSON.stringify(orders));
+            renderOrdersFast();
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>MF Dari Grocery - Confirmed</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }</style>
+</head>
+<body class="bg-slate-50 text-slate-900 pb-20 flex items-center justify-center min-h-screen p-4">
+
+  <div class="w-full max-w-md bg-white rounded-3xl border border-slate-200 shadow-xl p-6 text-center space-y-4">
+    <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
+      <i class="fa-solid fa-check text-3xl"></i>
+    </div>
+
+    <div>
+      <span class="text-[10px] font-black uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded border border-emerald-200">Order Confirmed</span>
+      <h1 class="text-xl sm:text-2xl font-black text-slate-900 mt-1">Order Placed Successfully!</h1>
+      <p class="text-xs text-slate-500">Your farm fresh grocery is being packed and will arrive in 30-40 mins.</p>
+    </div>
+
+    <!-- Details Card -->
+    <div class="bg-slate-900 text-white rounded-2xl p-4 text-left space-y-2.5 text-xs">
+      <div class="flex justify-between items-center">
+        <span class="text-slate-400">Order ID:</span>
+        <span class="font-mono font-bold text-amber-300" id="conf-id">#MFD-00000</span>
+      </div>
+      <div class="flex justify-between items-center">
+        <span class="text-slate-400">Estimated Delivery:</span>
+        <span class="font-bold text-emerald-400">30 - 40 Mins (Under 1 hr)</span>
+      </div>
+      <div class="flex justify-between items-center">
+        <span class="text-slate-400">Total Amount:</span>
+        <span class="font-bold text-white" id="conf-amount">₹0</span>
+      </div>
+      <div class="border-t border-slate-700 pt-2 text-slate-300 text-[11px] truncate">
+        <i class="fa-solid fa-location-dot text-rose-400 mr-1"></i> <span id="conf-address">Shivamogga</span>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="space-y-2 pt-2">
+      <a href="orders.html" class="block w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition">
+        Track Live in "Your Orders"
+      </a>
+      <a href="index.html" class="block w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition">
+        Back to Home
+      </a>
+    </div>
+  </div>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const lastOrder = JSON.parse(localStorage.getItem('mfd_last_order')) || {
+        orderId: 'MFD-94821',
+        totalAmount: 144,
+        address: '#42, Market Road, Shivamogga'
+      };
+      document.getElementById('conf-id').textContent = '#' + (lastOrder.orderId || lastOrder.id);
+      document.getElementById('conf-amount').textContent = `₹${lastOrder.totalAmount}`;
+      document.getElementById('conf-address').textContent = lastOrder.address;
+    });
+  </script>
+</body>
+</html>

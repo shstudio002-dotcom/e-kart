@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>MF Dari Grocery - Cart & Checkout</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Noto+Sans+Kannada:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>body { font-family: 'Inter', 'Noto Sans Kannada', sans-serif; -webkit-tap-highlight-color: transparent; }</style>
+</head>
+<body class="bg-slate-50 text-slate-900 pb-32 min-h-screen flex flex-col">
+
+  <!-- Header -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <a href="index.html" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200">
+          <i class="fa-solid fa-arrow-left text-sm"></i>
+        </a>
+        <h1 class="text-base sm:text-lg font-black text-slate-900">Your Cart (ನಿಮ್ಮ ಕಾರ್ಟ್)</h1>
+      </div>
+      <span class="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">Express 35m</span>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-3 sm:px-6 py-4 space-y-4 flex-grow w-full">
+    
+    <!-- Order Items Review Card -->
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-xs p-4 space-y-3">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+        <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Selected Groceries</span>
+        <a href="index.html" class="text-xs font-bold text-emerald-600 hover:underline"><i class="fa-solid fa-pen-to-square"></i> Edit</a>
+      </div>
+
+      <div id="cart-items-list" class="space-y-2.5 divide-y divide-slate-100"></div>
+
+      <div class="pt-3 border-t border-slate-200 space-y-1.5 text-xs text-slate-600">
+        <div class="flex justify-between">
+          <span>Items Total:</span>
+          <span id="cart-subtotal" class="font-bold text-slate-900">₹0</span>
+        </div>
+        <div class="flex justify-between">
+          <span>Delivery Charge:</span>
+          <span class="text-emerald-600 font-bold">FREE (0₹)</span>
+        </div>
+        <div class="flex justify-between items-center text-sm font-black text-slate-900 pt-2 border-t border-slate-100">
+          <span>Total Payable:</span>
+          <span id="cart-total" class="text-emerald-700 text-base font-black">₹0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delivery Form -->
+    <form id="checkout-form" onsubmit="handlePlaceOrder(event)" class="bg-white rounded-2xl border border-slate-200 shadow-xs p-4 space-y-3">
+      <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-100 pb-2">
+        <i class="fa-solid fa-truck-fast text-emerald-600 mr-1"></i> Delivery Information
+      </h2>
+
+      <div>
+        <label class="block text-xs font-semibold text-slate-700 mb-1">Your Full Name *</label>
+        <input type="text" id="cust-name" required placeholder="e.g. Ramesh Kumar" class="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:outline-none" />
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-slate-700 mb-1">Mobile Number *</label>
+        <input type="tel" id="cust-mobile" pattern="[0-9]{10}" required placeholder="10 digit mobile number" class="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:outline-none" />
+      </div>
+
+      <div>
+        <div class="flex items-center justify-between mb-1">
+          <label class="block text-xs font-semibold text-slate-700">Street Address *</label>
+          <button type="button" onclick="detectGPSLocation()" class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 flex items-center gap-1">
+            <i class="fa-solid fa-location-crosshairs"></i> Add Live Location
+          </button>
+        </div>
+        <textarea id="cust-address" rows="2" required placeholder="House number, landmark, locality..." class="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:outline-none"></textarea>
+        <p id="gps-status" class="text-[10px] text-emerald-600 mt-1 hidden"></p>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Payment Option</label>
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <label class="border-2 border-emerald-600 bg-emerald-50/50 p-2.5 rounded-xl flex items-center gap-2 cursor-pointer font-semibold">
+            <input type="radio" name="payment" value="Pay in Home (Cash on Delivery)" checked class="accent-emerald-600" />
+            <span>Pay in Home (Cash)</span>
+          </label>
+          <label class="border border-slate-200 p-2.5 rounded-xl flex items-center gap-2 cursor-pointer hover:bg-slate-50">
+            <input type="radio" name="payment" value="UPI / Online Payment" class="accent-emerald-600" />
+            <span>UPI / Online</span>
+          </label>
+        </div>
+      </div>
+
+      <button type="submit" id="btn-submit-order" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white font-bold rounded-xl shadow-md text-xs sm:text-sm transition mt-2 flex items-center justify-center gap-2">
+        <i class="fa-solid fa-check-circle"></i>
+        <span>Pay and Order Amount</span>
+      </button>
+    </form>
+  </main>
+
+  <!-- Universal Bottom Navigation Bar -->
+  <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40 shadow-xl py-2.5">
+    <div class="max-w-xl mx-auto grid grid-cols-4 px-3 items-center gap-2 text-center">
+      <a href="index.html" class="flex flex-col items-center justify-center py-1 text-gray-600 hover:text-green-700 font-semibold text-xs">
+        <span class="text-base leading-none">🏠</span><span class="mt-1">Home</span>
+      </a>
+      <a href="cart.html" class="flex flex-col items-center justify-center py-1 text-gray-600 hover:text-green-700 font-semibold text-xs">
+        <span class="text-base leading-none">🛒</span><span class="mt-1">Cart</span>
+      </a>
+      <a href="orders.html" class="flex flex-col items-center justify-center py-1 text-green-700 font-bold text-xs bg-green-50 rounded-xl">
+        <span class="text-base leading-none">📦</span><span class="mt-1">Orders</span>
+      </a>
+      <a href="profile.html" class="flex flex-col items-center justify-center py-1 text-gray-600 hover:text-green-700 font-semibold text-xs">
+        <span class="text-base leading-none">👤</span><span class="mt-1">Profile</span>
+      </a>
+    </div>
+  </nav>
+
+  <script src="api.js"></script>
+  <script>
+    let cart = JSON.parse(localStorage.getItem('mfd_cart')) || [];
+    let profile = JSON.parse(localStorage.getItem('mfd_profile')) || {
+      name: 'Ramesh Kumar',
+      mobile: '9876543210',
+      address: '#42, 2nd Cross, Market Road, Shivamogga'
+    };
+
+    function loadCart() {
+      const container = document.getElementById('cart-items-list');
+      container.innerHTML = '';
+
+      if (cart.length === 0) {
+        container.innerHTML = `
+          <div class="py-8 text-center text-slate-400 text-xs">
+            <p>Your cart is empty.</p>
+            <a href="index.html" class="mt-2 inline-block px-3 py-1.5 bg-emerald-600 text-white rounded-lg font-bold">Add Groceries</a>
+          </div>
+        `;
+        document.getElementById('cart-subtotal').textContent = '₹0';
+        document.getElementById('cart-total').textContent = '₹0';
+        return;
+      }
+
+      let grandTotal = 0;
+      cart.forEach(item => {
+        grandTotal += item.subtotal;
+        const row = document.createElement('div');
+        row.className = 'pt-2 flex items-center justify-between text-xs';
+        row.innerHTML = `
+          <div>
+            <span class="font-bold text-slate-800">${item.name}</span>
+            <div class="text-[10px] text-slate-500">${item.unit} × ${item.qty}</div>
+          </div>
+          <span class="font-black text-slate-900">₹${item.subtotal}</span>
+        `;
+        container.appendChild(row);
+      });
+
+      document.getElementById('cart-subtotal').textContent = `₹${grandTotal}`;
+      document.getElementById('cart-total').textContent = `₹${grandTotal}`;
+
+      document.getElementById('cust-name').value = profile.name || '';
+      document.getElementById('cust-mobile').value = profile.mobile || '';
+      document.getElementById('cust-address').value = profile.address || '';
+    }
+
+    function detectGPSLocation() {
+      const status = document.getElementById('gps-status');
+      const addrInput = document.getElementById('cust-address');
+      if (!navigator.geolocation) {
+        alert('Geolocation is not supported by your browser');
+        return;
+      }
+      status.classList.remove('hidden');
+      status.textContent = 'Detecting GPS location...';
+
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const { latitude, longitude } = pos.coords;
+          addrInput.value = `[GPS: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}] Shivamogga, Karnataka`;
+          status.textContent = '✓ Live GPS Location Pinned';
+        },
+        () => {
+          status.textContent = 'Could not get GPS. Please enter street address manually.';
+        }
+      );
+    }
+
+    async function handlePlaceOrder(e) {
+      e.preventDefault();
+      if (cart.length === 0) {
+        alert('Your cart is empty!');
+        return;
+      }
+
+      const btn = document.getElementById('btn-submit-order');
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Placing Order...`;
+
+      const totalAmt = cart.reduce((acc, itm) => acc + itm.subtotal, 0);
+      const orderPayload = {
+        customerName: document.getElementById('cust-name').value.trim(),
+        mobile: document.getElementById('cust-mobile').value.trim(),
+        address: document.getElementById('cust-address').value.trim(),
+        paymentMethod: document.querySelector('input[name="payment"]:checked').value,
+        items: cart,
+        totalAmount: totalAmt
+      };
+
+      try {
+        const savedOrder = await GroceryAPI.placeOrder(orderPayload);
+        localStorage.removeItem('mfd_cart');
+        localStorage.setItem('mfd_last_order', JSON.stringify(savedOrder));
+        window.location.href = 'order-confirmation.html';
+      } catch (err) {
+        alert('Failed to connect to backend server. Saving order locally.');
+        const fallbackOrder = {
+          orderId: 'MFD-' + Math.floor(10000 + Math.random() * 90000),
+          ...orderPayload,
+          status: 'Placed & Confirmed'
+        };
+        const localOrders = JSON.parse(localStorage.getItem('mfd_orders')) || [];
+        localOrders.unshift(fallbackOrder);
+        localStorage.setItem('mfd_orders', JSON.stringify(localOrders));
+        localStorage.removeItem('mfd_cart');
+        localStorage.setItem('mfd_last_order', JSON.stringify(fallbackOrder));
+        window.location.href = 'order-confirmation.html';
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', loadCart);
+  </script>
+</body>
+</html>

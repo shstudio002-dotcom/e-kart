@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>MF Dari Grocery - Offer Manager</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Kannada:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: { fontFamily: { sans: ['Inter', 'Noto Sans Kannada', 'sans-serif'] } }
+      }
+    }
+  </script>
+  <style>body { font-family: 'Inter', 'Noto Sans Kannada', sans-serif; -webkit-tap-highlight-color: transparent; }</style>
+</head>
+<body class="bg-slate-100 text-slate-900 pb-28 md:pb-12 min-h-screen flex flex-col antialiased">
+
+  <header class="bg-slate-900 text-white sticky top-0 z-30 border-b border-slate-800 shadow-md">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 sm:w-10 sm:h-10 bg-emerald-500 text-slate-950 rounded-xl flex items-center justify-center font-black text-base sm:text-lg shadow-sm">
+          <i class="fa-solid fa-store-slash"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-1.5">
+            <h1 class="text-sm sm:text-lg font-black tracking-tight leading-none">MF Dari Admin</h1>
+            <span class="text-[9px] sm:text-[10px] font-bold text-amber-400 bg-amber-950/80 px-1 py-0.5 rounded border border-amber-800 leading-none">Offers</span>
+          </div>
+          <p class="text-[10px] sm:text-[11px] text-slate-400 font-mono mt-0.5">Campaigns & Top Banner</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <a href="../frontend/index.html" target="_blank" class="px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 flex items-center gap-1.5 transition">
+          <i class="fa-solid fa-arrow-up-right-from-square text-[11px]"></i>
+          <span class="hidden sm:inline">Store View</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="hidden md:flex max-w-7xl mx-auto px-6 items-center gap-2 border-t border-slate-800 text-xs py-2">
+      <a href="admin.html" class="px-4 py-1.5 rounded-lg font-semibold bg-slate-800 text-slate-300 hover:text-white transition flex items-center gap-1.5">
+        <i class="fa-solid fa-truck-ramp-box"></i> Live Orders (<span class="orders-count-badge">0</span>)
+      </a>
+      <a href="inventory.html" class="px-4 py-1.5 rounded-lg font-semibold bg-slate-800 text-slate-300 hover:text-white transition flex items-center gap-1.5">
+        <i class="fa-solid fa-boxes-stacked"></i> Products Inventory (<span class="products-count-badge">0</span>)
+      </a>
+      <a href="add-product.html" class="px-4 py-1.5 rounded-lg font-semibold bg-slate-800 text-slate-300 hover:text-white transition flex items-center gap-1.5">
+        <i class="fa-solid fa-plus"></i> Add Product SKU
+      </a>
+      <a href="offers.html" class="px-4 py-1.5 rounded-lg font-bold bg-emerald-600 text-white transition flex items-center gap-1.5">
+        <i class="fa-solid fa-tag"></i> Store Offers & Banner
+      </a>
+    </div>
+  </header>
+
+  <main class="max-w-2xl mx-auto px-3 sm:px-6 py-4 flex-grow w-full space-y-4">
+    <div class="space-y-1.5">
+      <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Live Customer Banner Preview</span>
+      <div id="preview-banner" class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-800 to-teal-800 text-white p-4 sm:p-5 shadow-md">
+        <div class="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div class="space-y-1">
+            <span id="prev-tag" class="text-[10px] font-black uppercase tracking-wider bg-amber-400 text-slate-950 px-2 py-0.5 rounded-md inline-block">OFFER OF ANY</span>
+            <h2 id="prev-title" class="text-xl font-black">Flat 20% OFF Daily Groceries!</h2>
+            <p id="prev-sub" class="text-xs text-emerald-100">Fresh farm staples, rice, dairy & organic produce delivered in 30-40 mins.</p>
+          </div>
+          <div class="bg-white/10 backdrop-blur-md px-3 py-2 rounded-xl border border-white/20 text-center flex items-center gap-3 self-stretch sm:self-auto justify-around">
+            <div>
+              <span id="prev-fee" class="block text-base font-black text-amber-300">₹0</span>
+              <span class="text-[10px] text-emerald-100 uppercase">Delivery</span>
+            </div>
+            <div class="h-6 w-px bg-white/20"></div>
+            <div>
+              <span id="prev-speed" class="block text-base font-black text-white">35m</span>
+              <span class="text-[10px] text-emerald-100 uppercase">Speed</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-xs p-4 sm:p-6 space-y-4">
+      <div class="border-b border-slate-100 pb-2.5">
+        <h2 class="text-base sm:text-lg font-black text-slate-900 flex items-center gap-1.5">
+          <i class="fa-solid fa-pen-to-square text-emerald-600"></i> Edit Customer Banner Offer (ಆಫರ್ ಬದಲಾವಣೆ)
+        </h2>
+        <p class="text-xs text-slate-500">Updating these fields updates the banner on the customer home page in real time.</p>
+      </div>
+
+      <form id="offer-form" onsubmit="saveOfferSettings(event)" class="space-y-3.5 text-xs sm:text-sm">
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Offer Tag / Badge Text</label>
+          <input type="text" id="off-tag" oninput="updateLivePreview()" required class="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:outline-none" />
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Main Headline Offer Title *</label>
+          <input type="text" id="off-title" oninput="updateLivePreview()" required class="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:outline-none" />
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Subtitle / Description *</label>
+          <textarea id="off-sub" rows="2" oninput="updateLivePreview()" required class="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:outline-none"></textarea>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Delivery Fee (e.g. ₹0 / FREE)</label>
+            <input type="text" id="off-fee" oninput="updateLivePreview()" required class="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:outline-none" />
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Delivery Speed (e.g. 35m / 30-40 min)</label>
+            <input type="text" id="off-speed" oninput="updateLivePreview()" required class="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:outline-none" />
+          </div>
+        </div>
+
+        <div class="pt-2">
+          <button type="submit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white font-bold rounded-xl shadow-md text-xs sm:text-sm transition flex items-center justify-center gap-1.5">
+            <i class="fa-solid fa-floppy-disk"></i> Save & Publish Offer
+          </button>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-slate-900 border-t border-slate-800 grid grid-cols-4 px-2 py-2 z-40 shadow-2xl items-center text-center">
+    <a href="admin.html" class="flex flex-col items-center justify-center py-1 text-slate-400 font-semibold text-[10px]">
+      <i class="fa-solid fa-truck-ramp-box text-base"></i>
+      <span class="mt-1">Orders</span>
+    </a>
+
+    <a href="inventory.html" class="flex flex-col items-center justify-center py-1 text-slate-400 font-semibold text-[10px]">
+      <i class="fa-solid fa-boxes-stacked text-base"></i>
+      <span class="mt-1">Inventory</span>
+    </a>
+
+    <a href="add-product.html" class="flex flex-col items-center justify-center py-1 text-slate-400 font-semibold text-[10px]">
+      <i class="fa-solid fa-plus-circle text-base"></i>
+      <span class="mt-1">Add SKU</span>
+    </a>
+
+    <a href="offers.html" class="flex flex-col items-center justify-center py-1 text-emerald-400 font-bold text-[10px]">
+      <i class="fa-solid fa-tag text-base"></i>
+      <span class="mt-1">Offers</span>
+    </a>
+  </nav>
+
+  <script src="admin-api.js"></script>
+  <script>
+    async function loadOfferData() {
+      const offer = await AdminAPI.getOffer();
+      document.getElementById('off-tag').value = offer.tag || 'OFFER OF ANY';
+      document.getElementById('off-title').value = offer.title || 'Flat 20% OFF Daily Groceries!';
+      document.getElementById('off-sub').value = offer.subtitle || 'Fresh farm staples delivered in 30-40 mins.';
+      document.getElementById('off-fee').value = offer.deliveryFee || '₹0';
+      document.getElementById('off-speed').value = offer.speed || '35m';
+
+      updateLivePreview();
+    }
+
+    function updateLivePreview() {
+      document.getElementById('prev-tag').textContent = document.getElementById('off-tag').value || 'OFFER';
+      document.getElementById('prev-title').textContent = document.getElementById('off-title').value || 'Special Offer';
+      document.getElementById('prev-sub').textContent = document.getElementById('off-sub').value || 'Offer details...';
+      document.getElementById('prev-fee').textContent = document.getElementById('off-fee').value || '₹0';
+      document.getElementById('prev-speed').textContent = document.getElementById('off-speed').value || '35m';
+    }
+
+    async function saveOfferSettings(e) {
+      e.preventDefault();
+      await AdminAPI.saveOffer({
+        tag: document.getElementById('off-tag').value.trim(),
+        title: document.getElementById('off-title').value.trim(),
+        subtitle: document.getElementById('off-sub').value.trim(),
+        deliveryFee: document.getElementById('off-fee').value.trim(),
+        speed: document.getElementById('off-speed').value.trim()
+      });
+      alert('Offer published to customer app!');
+    }
+
+    window.addEventListener('DOMContentLoaded', async () => {
+      loadOfferData();
+      const orders = await AdminAPI.getOrders();
+      const products = await AdminAPI.getProducts();
+      document.querySelectorAll('.orders-count-badge').forEach(el => el.textContent = orders.length);
+      document.querySelectorAll('.products-count-badge').forEach(el => el.textContent = products.length);
+    });
+  </script>
+</body>
+</html>

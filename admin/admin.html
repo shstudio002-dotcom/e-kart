@@ -1,0 +1,468 @@
+<!-- admin/admin.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>MF Dari Grocery - Fast Admin Orders</title>
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+
+  <style>
+    body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+  </style>
+</head>
+<body class="bg-gray-100 text-gray-900 pb-28 md:pb-12 min-h-screen flex flex-col antialiased">
+
+  <!-- Header -->
+  <header class="bg-gray-900 text-white sticky top-0 z-30 border-b border-gray-800 shadow-md">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 bg-green-500 text-gray-950 rounded-xl flex items-center justify-center font-black text-base shadow-sm">
+          <i class="fa-solid fa-store-slash"></i>
+        </div>
+        <div class="ml-2">
+          <div class="flex items-center gap-1.5">
+            <h1 class="text-sm sm:text-base font-black tracking-tight leading-none">MF Dari Admin</h1>
+            <span class="text-xs font-bold text-green-400 bg-green-950 px-1.5 py-0.5 rounded border border-green-800 leading-none">Live Hub</span>
+          </div>
+          <p class="text-xs text-gray-400 font-mono mt-0.5">Real-Time Dispatch Engine</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <a href="../frontend/index.html" target="_blank" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-700 flex items-center gap-1.5 transition">
+          <i class="fa-solid fa-arrow-up-right-from-square text-xs mr-1"></i><span>Store View</span>
+        </a>
+        <button onclick="fetchAndRenderAdminOrders(true)" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-green-600 hover:bg-green-500 active:scale-95 text-white flex items-center gap-1.5 shadow-sm transition cursor-pointer">
+          <i class="fa-solid fa-rotate text-xs mr-1"></i><span>Sync</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Desktop Nav Bar -->
+    <div class="hidden md:flex max-w-7xl mx-auto px-6 items-center gap-2 border-t border-gray-800 text-xs py-2">
+      <a href="admin.html" class="px-4 py-1.5 rounded-lg font-bold bg-green-600 text-white transition flex items-center gap-1.5">
+        <i class="fa-solid fa-truck-ramp-box mr-1"></i> Live Orders (<span class="orders-count-badge">0</span>)
+      </a>
+      <a href="inventory.html" class="px-4 py-1.5 rounded-lg font-semibold bg-gray-800 text-gray-300 hover:text-white transition flex items-center gap-1.5">
+        <i class="fa-solid fa-boxes-stacked mr-1"></i> Products Inventory
+      </a>
+      <a href="add-product.html" class="px-4 py-1.5 rounded-lg font-semibold bg-gray-800 text-gray-300 hover:text-white transition flex items-center gap-1.5">
+        <i class="fa-solid fa-plus mr-1"></i> Add Product SKU
+      </a>
+      <a href="offers.html" class="px-4 py-1.5 rounded-lg font-semibold bg-gray-800 text-gray-300 hover:text-white transition flex items-center gap-1.5">
+        <i class="fa-solid fa-tag mr-1"></i> Store Offers & Banner
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto px-3 sm:px-6 py-4 flex-grow w-full space-y-4">
+    <!-- Metric Summary Grid -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5">
+      <div class="bg-white p-3.5 rounded-2xl border border-gray-200 shadow-sm">
+        <div class="flex items-center justify-between text-gray-400 text-xs font-semibold">
+          <span>Active Orders</span>
+          <i class="fa-solid fa-clipboard-list text-green-600"></i>
+        </div>
+        <div class="text-xl font-black text-gray-900 mt-1" id="stat-active-orders">0</div>
+      </div>
+
+      <div class="bg-white p-3.5 rounded-2xl border border-gray-200 shadow-sm">
+        <div class="flex items-center justify-between text-gray-400 text-xs font-semibold">
+          <span>Sales Revenue</span>
+          <i class="fa-solid fa-indian-rupee-sign text-green-600"></i>
+        </div>
+        <div class="text-xl font-black text-green-700 mt-1" id="stat-total-revenue">₹0</div>
+      </div>
+
+      <div class="bg-white p-3.5 rounded-2xl border border-gray-200 shadow-sm">
+        <div class="flex items-center justify-between text-gray-400 text-xs font-semibold">
+          <span>Socket Channel</span>
+          <i class="fa-solid fa-bolt text-yellow-500"></i>
+        </div>
+        <div class="text-sm font-black text-gray-900 mt-1 flex items-center gap-1.5" id="stat-socket-status">
+          <span class="h-2 w-2 rounded-full bg-green-500 animate-pulse mr-1"></span> Connected
+        </div>
+      </div>
+
+      <div class="bg-white p-3.5 rounded-2xl border border-gray-200 shadow-sm">
+        <div class="flex items-center justify-between text-gray-400 text-xs font-semibold">
+          <span>Hub Node</span>
+          <i class="fa-solid fa-location-dot text-green-600"></i>
+        </div>
+        <div class="text-sm font-black text-gray-900 mt-1 truncate">
+          Shivamogga Central
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Orders Section -->
+    <section class="space-y-3">
+      <div class="flex items-center justify-between gap-2 border-b border-gray-200 pb-2">
+        <h2 class="text-base font-black text-gray-900 flex items-center gap-1.5">
+          <i class="fa-solid fa-truck-ramp-box text-green-600 mr-1"></i> Live 1-Tap Checkpoint Dispatcher
+        </h2>
+        <button onclick="clearDeliveredOrders()" class="text-xs font-semibold text-red-600 hover:text-red-700 bg-red-50 px-2.5 py-1.5 rounded-xl border border-red-200 transition cursor-pointer">
+          Clear Delivered
+        </button>
+      </div>
+
+      <div id="orders-list-container" class="space-y-3">
+        <!-- Rendered instantly -->
+      </div>
+    </section>
+  </main>
+
+  <!-- Mobile Bottom Navigation -->
+  <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-gray-900 border-t border-gray-800 grid grid-cols-4 px-2 py-2 z-40 shadow-2xl items-center text-center">
+    <a href="admin.html" class="flex flex-col items-center justify-center py-1 text-green-400 font-bold text-xs">
+      <div class="relative">
+        <i class="fa-solid fa-truck-ramp-box text-sm mb-0.5"></i>
+        <span class="orders-count-badge absolute -top-1 -right-3 bg-green-500 text-gray-950 text-xs font-black rounded-full h-3.5 min-w-[14px] px-0.5 flex items-center justify-center">0</span>
+      </div>
+      <span class="mt-1">Orders</span>
+    </a>
+
+    <a href="inventory.html" class="flex flex-col items-center justify-center py-1 text-gray-400 font-semibold text-xs">
+      <i class="fa-solid fa-boxes-stacked text-sm mb-0.5"></i>
+      <span class="mt-1">Inventory</span>
+    </a>
+
+    <a href="add-product.html" class="flex flex-col items-center justify-center py-1 text-gray-400 font-semibold text-xs">
+      <i class="fa-solid fa-plus-circle text-sm mb-0.5"></i>
+      <span class="mt-1">Add SKU</span>
+    </a>
+
+    <a href="offers.html" class="flex flex-col items-center justify-center py-1 text-gray-400 font-semibold text-xs">
+      <i class="fa-solid fa-tag text-sm mb-0.5"></i>
+      <span class="mt-1">Offers</span>
+    </a>
+  </nav>
+
+  <script>
+    const BACKEND_URL = window.location.origin.includes('localhost') ? 'http://localhost:5000' : window.location.origin;
+    let localOrders = [];
+    let socket = null;
+
+    try {
+      if (typeof io !== 'undefined') {
+        socket = io(BACKEND_URL, {
+          transports: ['websocket', 'polling']
+        });
+
+        socket.on('connect', () => {
+          const el = document.getElementById('stat-socket-status');
+          if (el) el.innerHTML = `<span class="h-2 w-2 rounded-full bg-green-500 animate-pulse mr-1"></span> Connected`;
+        });
+
+        socket.on('disconnect', () => {
+          const el = document.getElementById('stat-socket-status');
+          if (el) el.innerHTML = `<span class="h-2 w-2 rounded-full bg-red-500 mr-1"></span> Reconnecting...`;
+        });
+
+        socket.on('new_order_placed', (order) => {
+          if (order && order.items && order.items.length > 0) {
+            const orderId = order.orderId || order.id || order._id;
+            if (!localOrders.some(o => (o.orderId || o.id || o._id) === orderId)) {
+              localOrders.unshift(order);
+              cleanAndDeduplicateOrders();
+              localStorage.setItem('mfd_orders', JSON.stringify(localOrders));
+              renderAdminList();
+            }
+          }
+        });
+
+        socket.on('order_status_updated', (data) => {
+          const ord = localOrders.find(o => (o.orderId || o.id || o._id) === data.orderId);
+          if (ord) {
+            ord.status = data.status;
+            localStorage.setItem('mfd_orders', JSON.stringify(localOrders));
+            renderAdminList();
+          } else {
+            fetchAndRenderAdminOrders(false);
+          }
+        });
+      }
+    } catch (err) {
+      console.warn('Socket connect notice:', err);
+    }
+
+    // Strictly purge any fake, empty, placeholder or dummy artifacts from storage
+    function cleanAndDeduplicateOrders() {
+      const uniqueMap = new Map();
+      
+      // Clear out the stale single last_order mock artifact if it has no items
+      const last = JSON.parse(localStorage.getItem('mfd_last_order'));
+      if (last && (!last.items || last.items.length === 0)) {
+        localStorage.removeItem('mfd_last_order');
+      }
+
+      localOrders.forEach(o => {
+        if (!o) return;
+        const id = String(o.orderId || o.id || o._id || '').trim();
+        const items = o.items;
+        const total = Number(o.totalAmount) || 0;
+
+        // Valid orders MUST have a real ID, actual items array, and total amount > 0
+        const isValidOrder = id && Array.isArray(items) && items.length > 0 && total > 0;
+
+        if (isValidOrder && !uniqueMap.has(id)) {
+          uniqueMap.set(id, o);
+        }
+      });
+
+      localOrders = Array.from(uniqueMap.values());
+      localStorage.setItem('mfd_orders', JSON.stringify(localOrders));
+    }
+
+    // Main Robust Render Method
+    function renderAdminList() {
+      const container = document.getElementById('orders-list-container');
+      if (!container) return;
+
+      cleanAndDeduplicateOrders();
+
+      const totalCount = Array.isArray(localOrders) ? localOrders.length : 0;
+      document.querySelectorAll('.orders-count-badge').forEach(el => el.textContent = totalCount);
+      
+      const activeCount = document.getElementById('stat-active-orders');
+      if (activeCount) activeCount.textContent = totalCount;
+
+      let totalRev = 0;
+      if (Array.isArray(localOrders)) {
+        totalRev = localOrders.reduce((sum, o) => sum + (Number(o.totalAmount) || 0), 0);
+      }
+      const revEl = document.getElementById('stat-total-revenue');
+      if (revEl) revEl.textContent = `₹${totalRev}`;
+
+      if (!localOrders || localOrders.length === 0) {
+        container.innerHTML = `
+          <div class="bg-white rounded-2xl border border-gray-200 p-8 text-center text-gray-400 text-xs">
+            <i class="fa-solid fa-box-open text-3xl mb-2 text-gray-300 block"></i>
+            No active orders. Placed customer orders appear here immediately.
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = '';
+      const fragment = document.createDocumentFragment();
+
+      localOrders.forEach(order => {
+        if (!order) return;
+        const orderId = order.orderId || order.id || order._id || 'MFD-00000';
+        const curStatus = order.status || 'point_hub';
+        const orderItems = Array.isArray(order.items) ? order.items : [];
+        const totalAmount = Number(order.totalAmount) || 0;
+        const customerName = order.customerName || 'Customer';
+        const mobile = order.mobile || '';
+        const address = order.address || 'Address provided';
+
+        let orderTime = 'Today';
+        try {
+          if (order.createdAt) {
+            orderTime = new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          } else if (order.timestamp) {
+            orderTime = order.timestamp;
+          }
+        } catch (e) {
+          orderTime = 'Today';
+        }
+
+        const card = document.createElement('div');
+        card.id = `order-card-${orderId}`;
+        card.className = 'bg-white rounded-2xl border border-gray-200 shadow-sm p-3.5 sm:p-4 space-y-3';
+
+        card.innerHTML = `
+          <div class="flex items-start justify-between border-b border-gray-100 pb-2.5 gap-2">
+            <div>
+              <div class="flex items-center gap-1.5">
+                <span class="text-xs font-mono font-black text-gray-900 bg-gray-100 px-2 py-0.5 rounded">#${orderId}</span>
+                <span class="text-xs text-gray-400"><i class="fa-regular fa-clock mr-0.5"></i> ${orderTime}</span>
+              </div>
+              <div class="text-xs font-bold text-gray-800 mt-1">
+                <i class="fa-solid fa-user text-green-600 mr-1"></i> ${customerName}
+                ${mobile ? `<span class="text-gray-400 font-normal ml-2"><i class="fa-solid fa-phone text-gray-400 mr-0.5"></i> <a href="tel:${mobile}" class="text-green-700 hover:underline font-semibold">${mobile}</a></span>` : ''}
+              </div>
+              <div class="text-xs text-gray-500 mt-0.5 truncate max-w-xs sm:max-w-md">
+                <i class="fa-solid fa-location-dot text-red-500 mr-1"></i> ${address}
+              </div>
+            </div>
+            
+            <div class="text-right flex-shrink-0">
+              <span class="text-xs text-gray-400 uppercase font-semibold block">Total</span>
+              <span class="text-base font-black text-green-700">₹${totalAmount}</span>
+            </div>
+          </div>
+
+          <!-- 1-Tap Checkpoint Dispatch Buttons -->
+          <div class="bg-gray-50 rounded-xl p-2.5 space-y-1.5 border border-gray-100">
+            <span class="text-xs font-bold uppercase tracking-wider text-gray-500 block">
+              1-Tap Dispatch Checkpoints:
+            </span>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <button 
+                onclick="instantSetPoint('${orderId}', 'point_hub')"
+                class="px-2 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1 ${curStatus === 'point_hub' || curStatus === 'Placed & Confirmed' ? 'bg-gray-900 text-white shadow' : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-100'}"
+              >
+                <i class="fa-solid fa-store mr-1"></i> 1. Hub (0%)
+              </button>
+
+              <button 
+                onclick="instantSetPoint('${orderId}', 'point_packed')"
+                class="px-2 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1 ${curStatus === 'point_packed' || curStatus === 'Packing Groceries' ? 'bg-green-600 text-white shadow' : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-100'}"
+              >
+                <i class="fa-solid fa-box mr-1"></i> 2. Picked (35%)
+              </button>
+
+              <button 
+                onclick="instantSetPoint('${orderId}', 'point_nearby')"
+                class="px-2 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1 ${curStatus === 'point_nearby' || curStatus === 'Out for Delivery (30-40m)' ? 'bg-yellow-500 text-gray-950 shadow' : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-100'}"
+              >
+                <i class="fa-solid fa-motorcycle mr-1"></i> 3. Near Area (70%)
+              </button>
+
+              <button 
+                onclick="instantSetPoint('${orderId}', 'point_doorstep')"
+                class="px-2 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1 ${curStatus === 'point_doorstep' || curStatus === 'Delivered' ? 'bg-green-700 text-white shadow' : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-100'}"
+              >
+                <i class="fa-solid fa-check-double mr-1"></i> 4. Delivered (100%)
+              </button>
+            </div>
+          </div>
+
+          <!-- Items Ordered List -->
+          <div class="bg-gray-50 rounded-xl p-2.5 space-y-1 text-xs border border-gray-100">
+            <span class="text-xs font-bold text-gray-500 block mb-1">
+              <i class="fa-solid fa-basket-shopping text-green-600 mr-1"></i> Ordered Items (${orderItems.length})
+            </span>
+            ${orderItems.map(it => {
+              const itemName = it.name || it.productName || it.nameEng || 'Grocery Item';
+              const unit = it.unit || it.unitLabel || '1 unit';
+              const qty = it.qty || it.quantity || 1;
+              const price = it.subtotal || it.price || 0;
+              return `
+                <div class="flex justify-between items-center text-gray-700 text-xs py-0.5 border-b border-gray-200 border-opacity-40 last:border-0">
+                  <span><strong>${itemName}</strong> (${unit}) × ${qty}</span>
+                  <span class="font-bold text-gray-900">₹${price}</span>
+                </div>
+              `;
+            }).join('')}
+          </div>
+
+          <div class="flex items-center justify-between text-xs text-gray-500 pt-1">
+            <span>Payment: <strong class="text-gray-700">${order.paymentMethod || 'COD'}</strong></span>
+            <button onclick="handleDeleteOrder('${orderId}')" class="text-red-600 hover:text-red-800 font-semibold px-2 py-1 rounded bg-red-50 border border-red-200">
+              <i class="fa-solid fa-trash mr-1"></i> Remove
+            </button>
+          </div>
+        `;
+        fragment.appendChild(card);
+      });
+
+      container.appendChild(fragment);
+    }
+
+    // Direct Asynchronous Fetcher with Strict Validation
+    async function fetchAndRenderAdminOrders(showToast = false) {
+      try {
+        const stored = JSON.parse(localStorage.getItem('mfd_orders')) || [];
+        if (stored.length > 0) {
+          localOrders = stored;
+          cleanAndDeduplicateOrders();
+          renderAdminList();
+        }
+      } catch (e) {}
+
+      try {
+        const res = await fetch(`${BACKEND_URL}/api/orders`);
+        if (res.ok) {
+          const apiOrders = await res.json();
+          if (Array.isArray(apiOrders)) {
+            const orderMap = new Map();
+            
+            [...apiOrders, ...localOrders].forEach(o => {
+              if (!o) return;
+              const id = String(o.orderId || o.id || o._id || '').trim();
+              const items = o.items;
+              const total = Number(o.totalAmount) || 0;
+              
+              if (id && Array.isArray(items) && items.length > 0 && total > 0 && !orderMap.has(id)) {
+                orderMap.set(id, o);
+              }
+            });
+
+            localOrders = Array.from(orderMap.values());
+            localStorage.setItem('mfd_orders', JSON.stringify(localOrders));
+            renderAdminList();
+          }
+        }
+      } catch (err) {
+        console.warn('Backend orders fetch failed, using cached state:', err);
+      }
+
+      if (localOrders.length === 0) {
+        renderAdminList();
+      }
+
+      if (showToast) alert('Orders synchronized.');
+    }
+
+    // Checkpoint Status Dispatcher
+    async function instantSetPoint(orderId, pointStatus) {
+      const ord = localOrders.find(o => (o.orderId || o.id || o._id) === orderId);
+      if (ord) {
+        ord.status = pointStatus;
+        localStorage.setItem('mfd_orders', JSON.stringify(localOrders));
+        renderAdminList();
+      }
+
+      if (socket) {
+        socket.emit('order_status_updated', { orderId, status: pointStatus });
+      }
+
+      try {
+        await fetch(`${BACKEND_URL}/api/orders/${orderId}/status`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: pointStatus })
+        });
+      } catch (err) {
+        console.warn('Status patch queued locally:', err);
+      }
+    }
+
+    // Delete Order
+    async function handleDeleteOrder(orderId) {
+      if (confirm(`Remove order #${orderId}?`)) {
+        localOrders = localOrders.filter(o => (o.orderId || o.id || o._id) !== orderId);
+        localStorage.setItem('mfd_orders', JSON.stringify(localOrders));
+        renderAdminList();
+
+        try {
+          await fetch(`${BACKEND_URL}/api/orders/${orderId}`, { method: 'DELETE' });
+        } catch (e) {}
+      }
+    }
+
+    // Clear Delivered
+    function clearDeliveredOrders() {
+      localOrders = localOrders.filter(o => o.status !== 'Delivered' && o.status !== 'point_doorstep');
+      localStorage.setItem('mfd_orders', JSON.stringify(localOrders));
+      renderAdminList();
+    }
+
+    // Execute immediately
+    cleanAndDeduplicateOrders();
+    fetchAndRenderAdminOrders(false);
+    window.addEventListener('DOMContentLoaded', () => {
+      cleanAndDeduplicateOrders();
+      fetchAndRenderAdminOrders(false);
+    });
+  </script>
+</body>
+</html>

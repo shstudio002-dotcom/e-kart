@@ -1,0 +1,134 @@
+<!-- frontend/profile.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>MF Dari Grocery - Profile</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Noto+Sans+Kannada:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>body { font-family: 'Inter', 'Noto Sans Kannada', sans-serif; -webkit-tap-highlight-color: transparent; }</style>
+</head>
+<body class="bg-slate-50 text-slate-900 pb-36 min-h-screen flex flex-col">
+
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
+    <div class="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <a href="index.html" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200">
+          <i class="fa-solid fa-arrow-left text-sm"></i>
+        </a>
+        <h1 class="text-base sm:text-lg font-black text-slate-900">Profile (ಪ್ರೊಫೈಲ್ ಪುಟ)</h1>
+      </div>
+      <button onclick="handleLogout()" class="text-xs font-bold text-rose-600 hover:underline">Logout</button>
+    </div>
+  </header>
+
+  <main class="max-w-md mx-auto px-3 sm:px-6 py-4 space-y-4 flex-grow w-full">
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-xs p-5 space-y-4">
+      <div class="flex items-center gap-3 border-b border-slate-100 pb-3">
+        <div class="w-12 h-12 bg-emerald-600 rounded-2xl flex items-center justify-center text-white text-xl font-bold shadow-md shadow-emerald-200">
+          <i class="fa-solid fa-user"></i>
+        </div>
+        <div>
+          <h2 class="text-base font-bold text-slate-900" id="prof-header-name">Ramesh Kumar</h2>
+          <p class="text-xs text-slate-400">MF Dari Verified Member</p>
+        </div>
+      </div>
+
+      <form id="profile-form" onsubmit="saveProfile(event)" class="space-y-3">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Name (ಹೆಸರು)</label>
+          <input type="text" id="p-name" required class="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:outline-none" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Email (ಇಮೇಲ್)</label>
+          <input type="email" id="p-email" class="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="optional@example.com" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Mobile Number (ಮೊಬೈಲ್ ಸಂಖ್ಯೆ)</label>
+          <input type="tel" id="p-mobile" pattern="[0-9]{10}" required class="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:outline-none" />
+        </div>
+
+        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-2">
+          <span class="text-xs font-bold text-slate-700 block"><i class="fa-solid fa-key text-emerald-600 mr-1"></i> Change Password</span>
+          <input type="password" id="p-cur-pass" placeholder="Current password" class="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-200 bg-white" />
+          <input type="password" id="p-new-pass" placeholder="New password" class="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-200 bg-white" />
+        </div>
+
+        <button type="submit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white font-bold rounded-xl shadow-md text-xs sm:text-sm transition mt-2">
+          Update Profile
+        </button>
+      </form>
+    </div>
+  </main>
+
+  <!-- Universal Bottom Navigation Bar -->
+  <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40 shadow-xl py-2.5">
+    <div class="max-w-xl mx-auto grid grid-cols-4 px-3 items-center gap-2 text-center">
+      <a href="index.html" class="flex flex-col items-center justify-center py-1 text-gray-600 hover:text-green-700 font-semibold text-xs">
+        <span class="text-base leading-none">🏠</span><span class="mt-1">Home</span>
+      </a>
+      <a href="cart.html" class="flex flex-col items-center justify-center py-1 text-gray-600 hover:text-green-700 font-semibold text-xs">
+        <span class="text-base leading-none">🛒</span><span class="mt-1">Cart</span>
+      </a>
+      <a href="orders.html" class="flex flex-col items-center justify-center py-1 text-gray-600 hover:text-green-700 font-semibold text-xs">
+        <span class="text-base leading-none">📦</span><span class="mt-1">Orders</span>
+      </a>
+      <a href="profile.html" class="flex flex-col items-center justify-center py-1 text-green-700 font-bold text-xs bg-green-50 rounded-xl">
+        <span class="text-base leading-none">👤</span><span class="mt-1">Profile</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- Connect centralized api.js -->
+  <script src="api.js"></script>
+
+  <script>
+    // Load logged-in user profile from localStorage or fallback to standard profile storage
+    let currentUser = JSON.parse(localStorage.getItem('mfd_user')) || {};
+    let profileData = JSON.parse(localStorage.getItem('mfd_profile')) || {
+      name: currentUser.name || 'Ramesh Kumar',
+      email: currentUser.email || '',
+      mobile: currentUser.mobile || '9876543210'
+    };
+
+    function loadProfile() {
+      document.getElementById('p-name').value = profileData.name || '';
+      document.getElementById('p-email').value = profileData.email || '';
+      document.getElementById('p-mobile').value = profileData.mobile || '';
+      document.getElementById('prof-header-name').textContent = profileData.name || 'Ramesh Kumar';
+    }
+
+    async function saveProfile(e) {
+      e.preventDefault();
+      profileData.name = document.getElementById('p-name').value.trim();
+      profileData.email = document.getElementById('p-email').value.trim();
+      profileData.mobile = document.getElementById('p-mobile').value.trim();
+
+      localStorage.setItem('mfd_profile', JSON.stringify(profileData));
+      
+      // Also update stored active user context if present
+      if (currentUser) {
+        currentUser.name = profileData.name;
+        currentUser.mobile = profileData.mobile;
+        localStorage.setItem('mfd_user', JSON.stringify(currentUser));
+      }
+
+      document.getElementById('prof-header-name').textContent = profileData.name;
+      alert('Profile details updated successfully!');
+    }
+
+    function handleLogout() {
+      if (confirm('Logout from account?')) {
+        localStorage.removeItem('mfd_user');
+        window.location.href = 'login.html';
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', loadProfile);
+  </script>
+</body>
+</html>
