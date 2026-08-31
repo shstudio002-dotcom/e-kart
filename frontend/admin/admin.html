@@ -45,7 +45,7 @@
     <!-- Desktop Nav Bar -->
     <div class="hidden md:flex max-w-7xl mx-auto px-6 items-center gap-2 border-t border-gray-800 text-xs py-2">
       <a href="admin.html" class="px-4 py-1.5 rounded-lg font-bold bg-green-600 text-white transition flex items-center gap-1.5">
-        <i class="fa-solid fa-truck-ramp-box mr-1"></i> Live Orders (<span class="orders-count-badge">0</span>)
+        <i class="fa-solid fa-truck-ramp-box mr-1"></i> Live Orders (<span class="admin-orders-count-badge">0</span>)
       </a>
       <a href="inventory.html" class="px-4 py-1.5 rounded-lg font-semibold bg-gray-800 text-gray-300 hover:text-white transition flex items-center gap-1.5">
         <i class="fa-solid fa-boxes-stacked mr-1"></i> Products Inventory
@@ -122,7 +122,7 @@
     <a href="admin.html" class="flex flex-col items-center justify-center py-1 text-green-400 font-bold text-xs">
       <div class="relative">
         <i class="fa-solid fa-truck-ramp-box text-sm mb-0.5"></i>
-        <span class="orders-count-badge absolute -top-1 -right-3 bg-green-500 text-gray-950 text-xs font-black rounded-full h-3.5 min-w-[14px] px-0.5 flex items-center justify-center">0</span>
+        <span class="admin-orders-count-badge absolute -top-1 -right-3 bg-green-500 text-gray-950 text-xs font-black rounded-full h-3.5 min-w-[14px] px-0.5 flex items-center justify-center">0</span>
       </div>
       <span class="mt-1">Orders</span>
     </a>
@@ -223,7 +223,7 @@
       cleanAndDeduplicateOrders();
 
       const totalCount = Array.isArray(localOrders) ? localOrders.length : 0;
-      document.querySelectorAll('.orders-count-badge').forEach(el => el.textContent = totalCount);
+      document.querySelectorAll('.admin-orders-count-badge').forEach(el => el.textContent = totalCount);
       
       const activeCount = document.getElementById('stat-active-orders');
       if (activeCount) activeCount.textContent = totalCount;

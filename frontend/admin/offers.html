@@ -1,3 +1,4 @@
+<!-- admin/offers.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -46,10 +47,10 @@
 
     <div class="hidden md:flex max-w-7xl mx-auto px-6 items-center gap-2 border-t border-slate-800 text-xs py-2">
       <a href="admin.html" class="px-4 py-1.5 rounded-lg font-semibold bg-slate-800 text-slate-300 hover:text-white transition flex items-center gap-1.5">
-        <i class="fa-solid fa-truck-ramp-box"></i> Live Orders (<span class="orders-count-badge">0</span>)
+        <i class="fa-solid fa-truck-ramp-box"></i> Live Orders (<span class="admin-orders-count-badge">0</span>)
       </a>
       <a href="inventory.html" class="px-4 py-1.5 rounded-lg font-semibold bg-slate-800 text-slate-300 hover:text-white transition flex items-center gap-1.5">
-        <i class="fa-solid fa-boxes-stacked"></i> Products Inventory (<span class="products-count-badge">0</span>)
+        <i class="fa-solid fa-boxes-stacked"></i> Products Inventory (<span class="admin-products-count-badge">0</span>)
       </a>
       <a href="add-product.html" class="px-4 py-1.5 rounded-lg font-semibold bg-slate-800 text-slate-300 hover:text-white transition flex items-center gap-1.5">
         <i class="fa-solid fa-plus"></i> Add Product SKU
@@ -188,8 +189,8 @@
       loadOfferData();
       const orders = await AdminAPI.getOrders();
       const products = await AdminAPI.getProducts();
-      document.querySelectorAll('.orders-count-badge').forEach(el => el.textContent = orders.length);
-      document.querySelectorAll('.products-count-badge').forEach(el => el.textContent = products.length);
+      document.querySelectorAll('.admin-orders-count-badge').forEach(el => el.textContent = orders.length);
+      document.querySelectorAll('.admin-products-count-badge').forEach(el => el.textContent = products.length);
     });
   </script>
 </body>
