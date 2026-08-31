@@ -144,7 +144,7 @@
   </nav>
 
   <script>
-    const BACKEND_URL = window.location.origin.includes('localhost') ? 'https://e-kart-y4af.onrender.com' : window.location.origin;
+    const BACKEND_URL = window.location.origin.includes('localhost') ? 'http://localhost:5000' : window.location.origin;
     let localOrders = [];
     let socket = null;
 
@@ -191,11 +191,9 @@
       console.warn('Socket connect notice:', err);
     }
 
-    // Strictly purge any fake, empty, placeholder or dummy artifacts from storage
     function cleanAndDeduplicateOrders() {
       const uniqueMap = new Map();
       
-      // Clear out the stale single last_order mock artifact if it has no items
       const last = JSON.parse(localStorage.getItem('mfd_last_order'));
       if (last && (!last.items || last.items.length === 0)) {
         localStorage.removeItem('mfd_last_order');
@@ -207,7 +205,6 @@
         const items = o.items;
         const total = Number(o.totalAmount) || 0;
 
-        // Valid orders MUST have a real ID, actual items array, and total amount > 0
         const isValidOrder = id && Array.isArray(items) && items.length > 0 && total > 0;
 
         if (isValidOrder && !uniqueMap.has(id)) {
@@ -219,7 +216,6 @@
       localStorage.setItem('mfd_orders', JSON.stringify(localOrders));
     }
 
-    // Main Robust Render Method
     function renderAdminList() {
       const container = document.getElementById('orders-list-container');
       if (!container) return;
@@ -367,7 +363,6 @@
       container.appendChild(fragment);
     }
 
-    // Direct Asynchronous Fetcher with Strict Validation
     async function fetchAndRenderAdminOrders(showToast = false) {
       try {
         const stored = JSON.parse(localStorage.getItem('mfd_orders')) || [];
@@ -412,7 +407,6 @@
       if (showToast) alert('Orders synchronized.');
     }
 
-    // Checkpoint Status Dispatcher
     async function instantSetPoint(orderId, pointStatus) {
       const ord = localOrders.find(o => (o.orderId || o.id || o._id) === orderId);
       if (ord) {
@@ -436,7 +430,6 @@
       }
     }
 
-    // Delete Order
     async function handleDeleteOrder(orderId) {
       if (confirm(`Remove order #${orderId}?`)) {
         localOrders = localOrders.filter(o => (o.orderId || o.id || o._id) !== orderId);
@@ -449,14 +442,12 @@
       }
     }
 
-    // Clear Delivered
     function clearDeliveredOrders() {
       localOrders = localOrders.filter(o => o.status !== 'Delivered' && o.status !== 'point_doorstep');
       localStorage.setItem('mfd_orders', JSON.stringify(localOrders));
       renderAdminList();
     }
 
-    // Execute immediately
     cleanAndDeduplicateOrders();
     fetchAndRenderAdminOrders(false);
     window.addEventListener('DOMContentLoaded', () => {
