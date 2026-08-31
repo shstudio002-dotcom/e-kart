@@ -1,3 +1,4 @@
+// frontend/admin-api.js (or wherever this is defined)
 const API_BASE_URL = window.location.origin.includes('localhost') ?
  'http://localhost:5000/api' :
  'https://e-kart-y4af.onrender.com/api';
@@ -5,7 +6,7 @@ const API_BASE_URL = window.location.origin.includes('localhost') ?
 const AdminAPI = {
   async getOrders() {
     try {
-      const res = await fetch(`${ADMIN_API_BASE}/orders`);
+      const res = await fetch(`${API_BASE_URL}/orders`);
       if (!res.ok) throw new Error('Orders fetch failed');
       const data = await res.json();
       localStorage.setItem('mfd_orders', JSON.stringify(data));
@@ -18,14 +19,13 @@ const AdminAPI = {
 
   async updateOrderStatus(orderId, status) {
     try {
-      const res = await fetch(`${ADMIN_API_BASE}/orders/${orderId}/status`, {
+      const res = await fetch(`${API_BASE_URL}/orders/${orderId}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status })
       });
       const data = await res.json();
       
-      // Update local storage in sync
       let orders = JSON.parse(localStorage.getItem('mfd_orders')) || [];
       const ord = orders.find(o => (o.orderId || o.id) === orderId);
       if (ord) ord.status = status;
@@ -43,7 +43,7 @@ const AdminAPI = {
 
   async deleteOrder(orderId) {
     try {
-      const res = await fetch(`${ADMIN_API_BASE}/orders/${orderId}`, {
+      const res = await fetch(`${API_BASE_URL}/orders/${orderId}`, {
         method: 'DELETE'
       });
       let orders = JSON.parse(localStorage.getItem('mfd_orders')) || [];
@@ -60,7 +60,7 @@ const AdminAPI = {
 
   async getProducts() {
     try {
-      const res = await fetch(`${ADMIN_API_BASE}/products`);
+      const res = await fetch(`${API_BASE_URL}/products`);
       if (!res.ok) throw new Error('Products fetch failed');
       const data = await res.json();
       localStorage.setItem('mfd_catalog', JSON.stringify(data));
@@ -73,7 +73,7 @@ const AdminAPI = {
 
   async addProduct(productData) {
     try {
-      const res = await fetch(`${ADMIN_API_BASE}/products`, {
+      const res = await fetch(`${API_BASE_URL}/products`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(productData)
@@ -105,7 +105,7 @@ const AdminAPI = {
 
   async updateProductPrice(productId, basePriceKg) {
     try {
-      const res = await fetch(`${ADMIN_API_BASE}/products/${productId}/price`, {
+      const res = await fetch(`${API_BASE_URL}/products/${productId}/price`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ basePriceKg: Number(basePriceKg) })
@@ -122,7 +122,7 @@ const AdminAPI = {
 
   async deleteProduct(productId) {
     try {
-      const res = await fetch(`${ADMIN_API_BASE}/products/${productId}`, {
+      const res = await fetch(`${API_BASE_URL}/products/${productId}`, {
         method: 'DELETE'
       });
       let prods = JSON.parse(localStorage.getItem('mfd_catalog')) || [];
@@ -139,7 +139,7 @@ const AdminAPI = {
 
   async getOffer() {
     try {
-      const res = await fetch(`${ADMIN_API_BASE}/offers`);
+      const res = await fetch(`${API_BASE_URL}/offers`);
       return await res.json();
     } catch (e) {
       return JSON.parse(localStorage.getItem('mfd_live_offer')) || {};
@@ -148,7 +148,7 @@ const AdminAPI = {
 
   async saveOffer(offerData) {
     try {
-      const res = await fetch(`${ADMIN_API_BASE}/offers`, {
+      const res = await fetch(`${API_BASE_URL}/offers`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(offerData)
@@ -160,10 +160,9 @@ const AdminAPI = {
     }
   },
 
-  // Authentication APIs for Admin Dashboard if needed
   async login(identifier, password) {
     try {
-      const res = await fetch(`${ADMIN_API_BASE}/auth/login`, {
+      const res = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ identifier, password })
@@ -180,7 +179,7 @@ const AdminAPI = {
 
   async signup(name, mobile, password) {
     try {
-      const res = await fetch(`${ADMIN_API_BASE}/auth/signup`, {
+      const res = await fetch(`${API_BASE_URL}/auth/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, mobile, password })
