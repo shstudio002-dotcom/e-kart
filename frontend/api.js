@@ -1,7 +1,7 @@
 // frontend/api.js
-const API_BASE_URL = window.location.origin.includes('localhost') 
-  ? 'http://localhost:5000/api' 
-  : '/api';
+const API_BASE_URL = window.location.origin.includes('localhost') ?
+ 'http://localhost:5000/api' :
+  'https://e-kart-y4af.onrender.com/api';
 
 const GroceryAPI = {
   // 1. Instant Cache-First Offer
