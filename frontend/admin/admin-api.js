@@ -1,9 +1,6 @@
-// frontend/admin-api.js
-const API_BASE_URL = resolveApiBaseUrl(
-  window.location.origin,
-  window.location.protocol,
-  window.location.hostname
-);
+const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+  ? 'http://localhost:5000/api'
+  : 'https://e-kart-y4af.onrender.com/api';
 
 const AdminAPI = {
   async getOrders() {
@@ -14,7 +11,6 @@ const AdminAPI = {
       localStorage.setItem('mfd_orders', JSON.stringify(data));
       return data;
     } catch (e) {
-      console.warn('AdminAPI fallback (orders):', e);
       return JSON.parse(localStorage.getItem('mfd_orders')) || [];
     }
   },
@@ -27,12 +23,10 @@ const AdminAPI = {
         body: JSON.stringify({ status })
       });
       const data = await res.json();
-      
       let orders = JSON.parse(localStorage.getItem('mfd_orders')) || [];
       const ord = orders.find(o => (o.orderId || o.id) === orderId);
       if (ord) ord.status = status;
       localStorage.setItem('mfd_orders', JSON.stringify(orders));
-      
       return data;
     } catch (e) {
       let orders = JSON.parse(localStorage.getItem('mfd_orders')) || [];
@@ -40,23 +34,6 @@ const AdminAPI = {
       if (ord) ord.status = status;
       localStorage.setItem('mfd_orders', JSON.stringify(orders));
       return { success: true, status };
-    }
-  },
-
-  async deleteOrder(orderId) {
-    try {
-      const res = await fetch(`${API_BASE_URL}/orders/${orderId}`, {
-        method: 'DELETE'
-      });
-      let orders = JSON.parse(localStorage.getItem('mfd_orders')) || [];
-      orders = orders.filter(o => (o.orderId || o.id) !== orderId);
-      localStorage.setItem('mfd_orders', JSON.stringify(orders));
-      return await res.json();
-    } catch (e) {
-      let orders = JSON.parse(localStorage.getItem('mfd_orders')) || [];
-      orders = orders.filter(o => (o.orderId || o.id) !== orderId);
-      localStorage.setItem('mfd_orders', JSON.stringify(orders));
-      return { success: true };
     }
   },
 
@@ -68,130 +45,42 @@ const AdminAPI = {
       localStorage.setItem('mfd_catalog', JSON.stringify(data));
       return data;
     } catch (e) {
-      console.warn('AdminAPI fallback (products):', e);
       return JSON.parse(localStorage.getItem('mfd_catalog')) || [];
     }
   },
 
-  async addProduct(formData) {
-    try {
-      const res = await fetch(`${API_BASE_URL}/products`, {
-        method: 'POST',
-        body: formData
-      });
+  async addProduct(productData) {
+    const res = await fetch(`${API_BASE_URL}/products`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(productData)
+    });
 
-      const text = await res.text();
-      let payload = {};
-      if (text) {
-        try {
-          payload = JSON.parse(text);
-        } catch {
-          payload = { error: text };
-        }
+    const text = await res.text();
+    let payload = {};
+    if (text) {
+      try {
+        payload = JSON.parse(text);
+      } catch {
+        payload = { error: text };
       }
-
-      if (!res.ok) {
-        throw new Error(payload.error || payload.message || 'Product add failed');
-      }
-
-      let prods = JSON.parse(localStorage.getItem('mfd_catalog')) || [];
-      prods.push(payload);
-      localStorage.setItem('mfd_catalog', JSON.stringify(prods));
-      return payload;
-    } catch (e) {
-      console.error('Add product network/server error:', e);
-      throw e;
     }
-  },
 
-  async updateProductPrice(productId, basePriceKg) {
-    try {
-      const res = await fetch(`${API_BASE_URL}/products/${productId}/price`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ basePriceKg: Number(basePriceKg) })
-      });
-      return await res.json();
-    } catch (e) {
-      let prods = JSON.parse(localStorage.getItem('mfd_catalog')) || [];
-      const p = prods.find(item => (item._id || item.id) === productId);
-      if (p) p.basePriceKg = Number(basePriceKg);
-      localStorage.setItem('mfd_catalog', JSON.stringify(prods));
-      return { success: true };
+    if (!res.ok) {
+      throw new Error(payload.error || payload.details || 'Product add failed');
     }
+
+    let prods = JSON.parse(localStorage.getItem('mfd_catalog')) || [];
+    prods.push(payload);
+    localStorage.setItem('mfd_catalog', JSON.stringify(prods));
+    return payload;
   },
 
   async deleteProduct(productId) {
-    try {
-      const res = await fetch(`${API_BASE_URL}/products/${productId}`, {
-        method: 'DELETE'
-      });
-      let prods = JSON.parse(localStorage.getItem('mfd_catalog')) || [];
-      prods = prods.filter(item => (item._id || item.id) !== productId);
-      localStorage.setItem('mfd_catalog', JSON.stringify(prods));
-      return await res.json();
-    } catch (e) {
-      let prods = JSON.parse(localStorage.getItem('mfd_catalog')) || [];
-      prods = prods.filter(item => (item._id || item.id) !== productId);
-      localStorage.setItem('mfd_catalog', JSON.stringify(prods));
-      return { success: true };
-    }
-  },
-
-  async getOffer() {
-    try {
-      const res = await fetch(`${API_BASE_URL}/offers`);
-      return await res.json();
-    } catch (e) {
-      return JSON.parse(localStorage.getItem('mfd_live_offer')) || {};
-    }
-  },
-
-  async saveOffer(offerData) {
-    try {
-      const res = await fetch(`${API_BASE_URL}/offers`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(offerData)
-      });
-      return await res.json();
-    } catch (e) {
-      localStorage.setItem('mfd_live_offer', JSON.stringify(offerData));
-      return { success: true };
-    }
-  },
-
-  async login(identifier, password) {
-    try {
-      const res = await fetch(`${API_BASE_URL}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ identifier, password })
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.message || 'Login failed');
-      }
-      return data;
-    } catch (err) {
-      throw err;
-    }
-  },
-
-  async signup(name, mobile, password) {
-    try {
-      const res = await fetch(`${API_BASE_URL}/auth/signup`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, mobile, password })
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.message || 'Registration failed');
-      }
-      return data;
-    } catch (err) {
-      throw err;
-    }
+    const res = await fetch(`${API_BASE_URL}/products/${productId}`, { method: 'DELETE' });
+    let prods = JSON.parse(localStorage.getItem('mfd_catalog')) || [];
+    prods = prods.filter(item => (item._id || item.id) !== productId);
+    localStorage.setItem('mfd_catalog', JSON.stringify(prods));
+    return await res.json();
   }
 };
