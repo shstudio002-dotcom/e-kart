@@ -11,8 +11,10 @@ const orderItemSchema = new mongoose.Schema({
 
 const orderSchema = new mongoose.Schema({
   orderId: { type: String, required: true, unique: true },
+  userId: { type: String, index: true },
   customerName: { type: String, required: true, trim: true },
-  mobile: { type: String, required: true, trim: true },
+  mobile: { type: String, required: true, trim: true, index: true },
+  userPhone: { type: String, trim: true, index: true },
   address: { type: String, required: true, trim: true },
   paymentMethod: { type: String, default: 'Pay in Home (Cash on Delivery)' },
   items: { type: [orderItemSchema], required: true },

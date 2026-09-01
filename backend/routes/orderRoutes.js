@@ -2,10 +2,15 @@ const express = require('express');
 const router = express.Router();
 const Order = require('../models/Order');
 
-// GET: Fast indexed lean query
+// GET: Fast indexed lean query (Filters by phone query param if provided, otherwise returns all for Admin)
 router.get('/', async (req, res) => {
   try {
-    const orders = await Order.find().sort({ createdAt: -1 }).limit(50).lean();
+    const { phone } = req.query;
+    let query = {};
+    if (phone) {
+      query.$or = [{ mobile: phone }, { userPhone: phone }];
+    }
+    const orders = await Order.find(query).sort({ createdAt: -1 }).limit(50).lean();
     res.status(200).json(orders);
   } catch (err) {
     res.status(500).json({ error: 'Failed to retrieve orders', details: err.message });
@@ -14,8 +19,16 @@ router.get('/', async (req, res) => {
 
 router.get('/:orderId', async (req, res) => {
   try {
-    const order = await Order.findOne({ orderId: req.params.orderId }).lean();
-    if (!order) return res.status(404).json({ error: 'Order not found.' });
+    const { orderId } = req.params;
+    const { phone } = req.query;
+    let query = { orderId };
+
+    if (phone) {
+      query.$or = [{ mobile: phone }, { userPhone: phone }];
+    }
+
+    const order = await Order.findOne(query).lean();
+    if (!order) return res.status(404).json({ error: 'Order not found or access denied.' });
     res.status(200).json(order);
   } catch (err) {
     res.status(500).json({ error: 'Failed to retrieve order', details: err.message });
@@ -24,8 +37,10 @@ router.get('/:orderId', async (req, res) => {
 
 router.post('/', async (req, res) => {
   try {
-    const { customerName, mobile, address, paymentMethod, items, totalAmount, orderId: clientOrderId } = req.body;
+    const { customerName, mobile, userPhone, address, paymentMethod, items, totalAmount, orderId: clientOrderId, userId } = req.body;
     
+    const contactNumber = String(mobile || userPhone || '').trim();
+
     // If the frontend already generated an orderId, check if it exists to prevent duplication
     let orderId = clientOrderId;
     if (orderId) {
@@ -39,8 +54,10 @@ router.post('/', async (req, res) => {
 
     const newOrder = new Order({
       orderId,
+      userId: userId || '',
       customerName,
-      mobile,
+      mobile: contactNumber,
+      userPhone: contactNumber,
       address,
       paymentMethod: paymentMethod || 'Pay in Home (Cash on Delivery)',
       items: items || [],
