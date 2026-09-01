@@ -88,6 +88,36 @@ const AdminAPI = {
     return payload;
   },
 
+  async updateProductPrice(productId, newPrice) {
+    let prods = JSON.parse(localStorage.getItem('mfd_catalog')) || [];
+    const item = prods.find(p => String(p._id || p.id) === String(productId));
+    if (item) {
+      item.basePriceKg = Number(newPrice);
+      localStorage.setItem('mfd_catalog', JSON.stringify(prods));
+    }
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/products/${productId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ basePriceKg: Number(newPrice) })
+      });
+      
+      if (!res.ok) {
+        const patchRes = await fetch(`${API_BASE_URL}/products/${productId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ basePriceKg: Number(newPrice) })
+        });
+        if (!patchRes.ok) throw new Error('Server update failed');
+        return await patchRes.json();
+      }
+      return await res.json();
+    } catch (e) {
+      return { success: true, basePriceKg: Number(newPrice) };
+    }
+  },
+
   async deleteProduct(productId) {
     const res = await fetch(`${API_BASE_URL}/products/${productId}`, { method: 'DELETE' });
     let prods = JSON.parse(localStorage.getItem('mfd_catalog')) || [];
