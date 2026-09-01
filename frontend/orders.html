@@ -75,10 +75,13 @@
       return 0;
     }
 
-    // Immediate 0ms paint from local storage
+    // Immediate 0ms paint from local storage filtered by logged-in user phone
     function renderOrdersFast() {
       const container = document.getElementById('orders-container');
       if (!container) return;
+
+      const user = JSON.parse(localStorage.getItem('mfd_user')) || {};
+      const userPhone = String(user.phone || localStorage.getItem('mfd_user_phone') || '').trim();
 
       let orders = [];
       try {
@@ -86,15 +89,18 @@
         const lastOrder = JSON.parse(localStorage.getItem('mfd_last_order'));
         if (lastOrder) {
           const lastId = String(lastOrder.orderId || lastOrder.id || lastOrder._id || '').trim();
-          // Only unshift lastOrder if it isn't already in orders and isn't empty
           if (lastId && !orders.some(o => String(o.orderId || o.id || o._id || '').trim() === lastId)) {
             orders.unshift(lastOrder);
           } else {
-            // If it's already in orders, clear mfd_last_order so it doesn't cause duplication or ghost resurrections
             localStorage.removeItem('mfd_last_order');
           }
         }
       } catch(e) {}
+
+      // Filter by logged-in user phone so customers only see their own orders
+      if (userPhone) {
+        orders = orders.filter(o => !o.userPhone || String(o.userPhone).trim() === userPhone);
+      }
 
       // Filter out invalid/empty placeholder orders
       orders = orders.filter(o => o && (o.orderId || o.id || o._id) && Array.isArray(o.items) && o.items.length > 0);
@@ -204,17 +210,21 @@
         ? 'http://localhost:5000'
         : window.location.origin;
 
+      const user = JSON.parse(localStorage.getItem('mfd_user')) || {};
+      const userPhone = String(user.phone || localStorage.getItem('mfd_user_phone') || '').trim();
+
+      // Fetch ONLY this user's orders from MongoDB via backend API query parameter
+      const endpoint = userPhone 
+        ? `${BACKEND_URL}/api/orders?phone=${encodeURIComponent(userPhone)}` 
+        : `${BACKEND_URL}/api/orders`;
+
       // Background REST revalidation
-      fetch(`${BACKEND_URL}/api/orders`)
+      fetch(endpoint)
         .then(res => res.json())
         .then(apiOrders => {
           if (Array.isArray(apiOrders)) {
-            if (apiOrders.length === 0) {
-              localStorage.removeItem('mfd_orders');
-              localStorage.removeItem('mfd_last_order');
-            } else {
+            if (apiOrders.length > 0) {
               localStorage.setItem('mfd_orders', JSON.stringify(apiOrders));
-              // Clear mfd_last_order if the server has synchronized the orders list
               localStorage.removeItem('mfd_last_order');
             }
             renderOrdersFast();
