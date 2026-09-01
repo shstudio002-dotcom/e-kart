@@ -1,6 +1,15 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
 const Product = require('../models/Product');
+const cloudinary = require('../config/cloudinary');
+
+// Multer memory storage (holds file in RAM buffer for direct streaming)
+const storage = multer.memoryStorage();
+const upload = multer({ 
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 } // 5MB max file size
+});
 
 // GET: Fetch all active products
 router.get('/', async (req, res) => {
@@ -12,13 +21,35 @@ router.get('/', async (req, res) => {
   }
 });
 
-// POST: Add a new grocery product
-router.post('/', async (req, res) => {
+// POST: Add a new grocery product SKU with Cloudinary Image Upload
+router.post('/', upload.single('image'), async (req, res) => {
   try {
     const { nameKan, nameEng, category, basePriceKg } = req.body;
 
     if (!nameKan || !nameEng || !basePriceKg) {
-      return res.status(400).json({ error: 'nameKan, nameEng, and basePriceKg are required fields.' });
+      return res.status(400).json({ error: 'nameKan, nameEng, and basePriceKg are required.' });
+    }
+
+    let imageUrl = '';
+
+    // If an image file is attached, stream it to Cloudinary
+    if (req.file) {
+      const uploadPromise = new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { 
+            folder: 'mf_dari_groceries',
+            resource_type: 'image'
+          },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        );
+        stream.end(req.file.buffer);
+      });
+
+      const uploadResult = await uploadPromise;
+      imageUrl = uploadResult.secure_url;
     }
 
     const unitOptions = [
@@ -36,6 +67,7 @@ router.post('/', async (req, res) => {
       nameEng,
       category: category || 'grains',
       basePriceKg: Number(basePriceKg),
+      image: imageUrl,
       unitOptions,
       selectedUnitIndex: 3
     });
@@ -43,11 +75,12 @@ router.post('/', async (req, res) => {
     const saved = await newProduct.save();
     res.status(201).json(saved);
   } catch (err) {
-    res.status(400).json({ error: 'Failed to create product', details: err.message });
+    console.error('Cloudinary / Product Save Error:', err);
+    res.status(500).json({ error: 'Failed to create product', details: err.message });
   }
 });
 
-// PATCH: Update product price
+// PATCH: Update product base price
 router.patch('/:id/price', async (req, res) => {
   try {
     const { basePriceKg } = req.body;
