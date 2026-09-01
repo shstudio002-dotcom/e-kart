@@ -40,11 +40,12 @@ app.use('/api/offers', offerRoutes);
 app.use('/api/auth', authRoutes);
 
 // Serve Static Frontend and Admin Folders
-app.use('/frontend', express.static(path.join(__dirname, '../frontend')));
-app.use('/admin', express.static(path.join(__dirname, '../admin')));
+// Fix: Map root static folder so index.html is accessible at /index.html directly matching frontend structure
+app.use(express.static(path.join(__dirname, '../frontend')));
+app.use('/admin', express.static(path.join(__dirname, '../frontend/admin')));
 
 app.get('/', (req, res) => {
-  res.redirect('/frontend/index.html');
+  res.sendFile(path.join(__dirname, '../frontend/index.html'));
 });
 
 // Socket.io Live Tracking & Real-Time Sync

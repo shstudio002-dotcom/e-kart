@@ -22,13 +22,13 @@ router.post('/', async (req, res) => {
     }
 
     const unitOptions = [
-  { label: '100 gm', multiplier: 0.1 },
-  { label: '250 gm', multiplier: 0.25 },
-  { label: '500 gm', multiplier: 0.5 },
-  { label: '1 kg', multiplier: 1.0 },
-  { label: '2 kg', multiplier: 2.0 },
-  { label: '5 kg', multiplier: 5.0 },
-  { label: '10 kg', multiplier: 10.0 }
+      { label: '100 gm', multiplier: 0.1 },
+      { label: '250 gm', multiplier: 0.25 },
+      { label: '500 gm', multiplier: 0.5 },
+      { label: '1 kg', multiplier: 1.0 },
+      { label: '2 kg', multiplier: 2.0 },
+      { label: '5 kg', multiplier: 5.0 },
+      { label: '10 kg', multiplier: 10.0 }
     ];
 
     const newProduct = new Product({
@@ -37,7 +37,7 @@ router.post('/', async (req, res) => {
       category: category || 'grains',
       basePriceKg: Number(basePriceKg),
       unitOptions,
-      selectedUnitIndex: 1
+      selectedUnitIndex: 3
     });
 
     const saved = await newProduct.save();

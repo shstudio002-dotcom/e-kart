@@ -1,0 +1,282 @@
+0 verbose cli C:\Program Files\nodejs\node.exe C:\Program Files\nodejs\node_modules\npm\bin\npm-cli.js
+1 info using npm@10.9.2
+2 info using node@v22.14.0
+3 silly config load:file:C:\Program Files\nodejs\node_modules\npm\npmrc
+4 silly config load:file:E:\grocery-delivery\backend\.npmrc
+5 silly config load:file:C:\Users\HP\.npmrc
+6 silly config load:file:E:\grocery-delivery\backend\.npm-global\etc\npmrc
+7 verbose title npm install cloudinary multer dotenv
+8 verbose argv "install" "cloudinary" "multer" "dotenv"
+9 verbose logfile logs-max:10 dir:E:\grocery-delivery\backend\.npm-cache\_logs\2026-09-01T07_31_30_078Z-
+10 verbose logfile E:\grocery-delivery\backend\.npm-cache\_logs\2026-09-01T07_31_30_078Z-debug-0.log
+11 silly logfile done cleaning log files
+12 silly packumentCache heap:2197815296 maxSize:549453824 maxEntrySize:274726912
+13 silly idealTree buildDeps
+14 silly fetch manifest dotenv@^16.6.1
+15 silly packumentCache full:https://registry.npmjs.org/dotenv cache-miss
+16 http fetch GET 200 https://registry.npmjs.org/dotenv 422ms (cache revalidated)
+17 silly packumentCache full:https://registry.npmjs.org/dotenv set size:277821 disposed:false
+18 silly fetch manifest cloudinary@*
+19 silly packumentCache full:https://registry.npmjs.org/cloudinary cache-miss
+20 http fetch GET 200 https://registry.npmjs.org/cloudinary 391ms (cache miss)
+21 silly packumentCache full:https://registry.npmjs.org/cloudinary set size:undefined disposed:false
+22 silly fetch manifest multer@*
+23 silly packumentCache full:https://registry.npmjs.org/multer cache-miss
+24 http fetch GET 200 https://registry.npmjs.org/multer 112ms (cache miss)
+25 silly packumentCache full:https://registry.npmjs.org/multer set size:undefined disposed:false
+26 silly placeDep ROOT cloudinary@2.11.0 OK for: mf-dari-grocery-backend@1.0.0 want: *
+27 silly placeDep ROOT dotenv@16.6.1 REPLACE for: mf-dari-grocery-backend@1.0.0 want: ^16.6.1
+28 silly placeDep ROOT multer@2.3.0 OK for: mf-dari-grocery-backend@1.0.0 want: *
+29 silly fetch manifest lodash@^4.17.23
+30 silly packumentCache full:https://registry.npmjs.org/lodash cache-miss
+31 silly fetch manifest busboy@^1.6.0
+32 silly packumentCache full:https://registry.npmjs.org/busboy cache-miss
+33 silly fetch manifest append-field@^1.0.0
+34 silly packumentCache full:https://registry.npmjs.org/append-field cache-miss
+35 silly fetch manifest concat-stream@^2.0.0
+36 silly packumentCache full:https://registry.npmjs.org/concat-stream cache-miss
+37 http fetch GET 200 https://registry.npmjs.org/lodash 119ms (cache miss)
+38 silly packumentCache full:https://registry.npmjs.org/lodash set size:undefined disposed:false
+39 http fetch GET 200 https://registry.npmjs.org/append-field 340ms (cache miss)
+40 silly packumentCache full:https://registry.npmjs.org/append-field set size:undefined disposed:false
+41 http fetch GET 200 https://registry.npmjs.org/busboy 369ms (cache miss)
+42 silly packumentCache full:https://registry.npmjs.org/busboy set size:undefined disposed:false
+43 http fetch GET 200 https://registry.npmjs.org/concat-stream 372ms (cache miss)
+44 silly packumentCache full:https://registry.npmjs.org/concat-stream set size:undefined disposed:false
+45 silly placeDep ROOT lodash@4.18.1 OK for: cloudinary@2.11.0 want: ^4.17.23
+46 silly placeDep ROOT append-field@1.0.0 OK for: multer@2.3.0 want: ^1.0.0
+47 silly placeDep ROOT busboy@1.6.0 OK for: multer@2.3.0 want: ^1.6.0
+48 silly placeDep ROOT concat-stream@2.0.0 OK for: multer@2.3.0 want: ^2.0.0
+49 silly fetch manifest streamsearch@^1.1.0
+50 silly packumentCache full:https://registry.npmjs.org/streamsearch cache-miss
+51 silly fetch manifest buffer-from@^1.0.0
+52 silly packumentCache full:https://registry.npmjs.org/buffer-from cache-miss
+53 silly fetch manifest readable-stream@^3.0.2
+54 silly packumentCache full:https://registry.npmjs.org/readable-stream cache-miss
+55 silly fetch manifest typedarray@^0.0.6
+56 silly packumentCache full:https://registry.npmjs.org/typedarray cache-miss
+57 http fetch GET 200 https://registry.npmjs.org/streamsearch 138ms (cache miss)
+58 silly packumentCache full:https://registry.npmjs.org/streamsearch set size:undefined disposed:false
+59 http fetch GET 200 https://registry.npmjs.org/typedarray 139ms (cache miss)
+60 silly packumentCache full:https://registry.npmjs.org/typedarray set size:undefined disposed:false
+61 http fetch GET 200 https://registry.npmjs.org/buffer-from 144ms (cache miss)
+62 silly packumentCache full:https://registry.npmjs.org/buffer-from set size:undefined disposed:false
+63 http fetch GET 200 https://registry.npmjs.org/readable-stream 154ms (cache miss)
+64 silly packumentCache full:https://registry.npmjs.org/readable-stream set size:undefined disposed:false
+65 silly placeDep ROOT streamsearch@1.1.0 OK for: busboy@1.6.0 want: ^1.1.0
+66 silly placeDep ROOT buffer-from@1.1.2 OK for: concat-stream@2.0.0 want: ^1.0.0
+67 silly placeDep ROOT readable-stream@3.6.2 OK for: concat-stream@2.0.0 want: ^3.0.2
+68 silly placeDep ROOT typedarray@0.0.6 OK for: concat-stream@2.0.0 want: ^0.0.6
+69 silly fetch manifest string_decoder@^1.1.1
+70 silly packumentCache full:https://registry.npmjs.org/string_decoder cache-miss
+71 silly fetch manifest util-deprecate@^1.0.1
+72 silly packumentCache full:https://registry.npmjs.org/util-deprecate cache-miss
+73 http fetch GET 200 https://registry.npmjs.org/util-deprecate 93ms (cache miss)
+74 silly packumentCache full:https://registry.npmjs.org/util-deprecate set size:undefined disposed:false
+75 http fetch GET 200 https://registry.npmjs.org/string_decoder 97ms (cache miss)
+76 silly packumentCache full:https://registry.npmjs.org/string_decoder set size:undefined disposed:false
+77 silly placeDep ROOT string_decoder@1.3.0 OK for: readable-stream@3.6.2 want: ^1.1.1
+78 silly placeDep ROOT util-deprecate@1.0.2 OK for: readable-stream@3.6.2 want: ^1.0.1
+79 silly reify moves {}
+80 silly audit bulk request {
+80 silly audit   '@mongodb-js/saslprep': [ '1.5.0' ],
+80 silly audit   '@socket.io/component-emitter': [ '3.1.2' ],
+80 silly audit   '@types/cors': [ '2.8.19' ],
+80 silly audit   '@types/node': [ '26.4.0' ],
+80 silly audit   '@types/webidl-conversions': [ '7.0.3' ],
+80 silly audit   '@types/whatwg-url': [ '13.0.0', '11.0.5' ],
+80 silly audit   '@types/ws': [ '8.18.1' ],
+80 silly audit   accepts: [ '1.3.8' ],
+80 silly audit   anymatch: [ '3.1.3' ],
+80 silly audit   'array-flatten': [ '1.1.1' ],
+80 silly audit   'balanced-match': [ '4.0.4' ],
+80 silly audit   base64id: [ '2.0.0' ],
+80 silly audit   'binary-extensions': [ '2.3.0' ],
+80 silly audit   'body-parser': [ '1.20.6' ],
+80 silly audit   'brace-expansion': [ '5.0.9' ],
+80 silly audit   braces: [ '3.0.3' ],
+80 silly audit   bson: [ '6.10.4', '7.3.2' ],
+80 silly audit   bytes: [ '3.1.2' ],
+80 silly audit   'call-bind-apply-helpers': [ '1.0.2' ],
+80 silly audit   'call-bound': [ '1.0.4' ],
+80 silly audit   chokidar: [ '3.6.0' ],
+80 silly audit   compressible: [ '2.0.18' ],
+80 silly audit   compression: [ '1.8.1' ],
+80 silly audit   negotiator: [ '0.6.4', '0.6.3' ],
+80 silly audit   'content-disposition': [ '0.5.4' ],
+80 silly audit   'content-type': [ '1.0.5' ],
+80 silly audit   cookie: [ '0.7.2' ],
+80 silly audit   'cookie-signature': [ '1.0.7' ],
+80 silly audit   cors: [ '2.8.6' ],
+80 silly audit   debug: [ '2.6.9', '4.4.3' ],
+80 silly audit   depd: [ '2.0.0' ],
+80 silly audit   destroy: [ '1.2.0' ],
+80 silly audit   'dunder-proto': [ '1.0.1' ],
+80 silly audit   'ee-first': [ '1.1.1' ],
+80 silly audit   encodeurl: [ '2.0.0' ],
+80 silly audit   'engine.io': [ '6.6.9' ],
+80 silly audit   'engine.io-parser': [ '5.2.3' ],
+80 silly audit   ms: [ '2.1.3', '2.0.0' ],
+80 silly audit   'es-define-property': [ '1.0.1' ],
+80 silly audit   'es-errors': [ '1.3.0' ],
+80 silly audit   'es-object-atoms': [ '1.1.2' ],
+80 silly audit   'escape-html': [ '1.0.3' ],
+80 silly audit   etag: [ '1.8.1' ],
+80 silly audit   express: [ '4.22.2' ],
+80 silly audit   'fill-range': [ '7.1.1' ],
+80 silly audit   finalhandler: [ '1.3.2' ],
+80 silly audit   forwarded: [ '0.2.0' ],
+80 silly audit   fresh: [ '0.5.2' ],
+80 silly audit   fsevents: [ '2.3.3' ],
+80 silly audit   'function-bind': [ '1.1.2' ],
+80 silly audit   'get-intrinsic': [ '1.3.0' ],
+80 silly audit   'get-proto': [ '1.0.1' ],
+80 silly audit   'glob-parent': [ '5.1.2' ],
+80 silly audit   gopd: [ '1.2.0' ],
+80 silly audit   'has-flag': [ '3.0.0' ],
+80 silly audit   'has-symbols': [ '1.1.0' ],
+80 silly audit   hasown: [ '2.0.4' ],
+80 silly audit   'http-errors': [ '2.0.1' ],
+80 silly audit   'iconv-lite': [ '0.4.24' ],
+80 silly audit   'ignore-by-default': [ '1.0.1' ],
+80 silly audit   inherits: [ '2.0.4' ],
+80 silly audit   'ipaddr.js': [ '1.9.1' ],
+80 silly audit   'is-binary-path': [ '2.1.0' ],
+80 silly audit   'is-extglob': [ '2.1.1' ],
+80 silly audit   'is-glob': [ '4.0.3' ],
+80 silly audit   'is-number': [ '7.0.0' ],
+80 silly audit   kareem: [ '2.6.3' ],
+80 silly audit   'math-intrinsics': [ '1.1.0' ],
+80 silly audit   'media-typer': [ '0.3.0' ],
+80 silly audit   'memory-pager': [ '1.5.0' ],
+80 silly audit   'merge-descriptors': [ '1.0.3' ],
+80 silly audit   methods: [ '1.1.2' ],
+80 silly audit   mime: [ '1.6.0' ],
+80 silly audit   'mime-db': [ '1.52.0' ],
+80 silly audit   'mime-types': [ '2.1.35' ],
+80 silly audit   minimatch: [ '10.2.6' ],
+80 silly audit   mongodb: [ '7.6.0', '6.20.0' ],
+80 silly audit   'mongodb-connection-string-url': [ '7.0.2', '3.0.2' ],
+80 silly audit   mongoose: [ '8.24.4' ],
+80 silly audit   mpath: [ '0.9.0' ],
+80 silly audit   mquery: [ '5.0.0' ],
+80 silly audit   nodemon: [ '3.1.14' ],
+80 silly audit   'normalize-path': [ '3.0.0' ],
+80 silly audit   'object-assign': [ '4.1.1' ],
+80 silly audit   'object-inspect': [ '1.13.4' ],
+80 silly audit   'on-finished': [ '2.4.1' ],
+80 silly audit   'on-headers': [ '1.1.0' ],
+80 silly audit   parseurl: [ '1.3.3' ],
+80 silly audit   'path-to-regexp': [ '0.1.13' ],
+80 silly audit   picomatch: [ '2.3.2' ],
+80 silly audit   'proxy-addr': [ '2.0.7' ],
+80 silly audit   'pstree.remy': [ '1.1.8' ],
+80 silly audit   punycode: [ '2.3.1' ],
+80 silly audit   qs: [ '6.15.3' ],
+80 silly audit   'range-parser': [ '1.2.1' ],
+80 silly audit   'raw-body': [ '2.5.3' ],
+80 silly audit   readdirp: [ '3.6.0' ],
+80 silly audit   'safe-buffer': [ '5.2.1' ],
+80 silly audit   'safer-buffer': [ '2.1.2' ],
+80 silly audit   semver: [ '7.8.5' ],
+80 silly audit   send: [ '0.19.2' ],
+80 silly audit   'serve-static': [ '1.16.3' ],
+80 silly audit   setprototypeof: [ '1.2.0' ],
+80 silly audit   'side-channel': [ '1.1.1' ],
+80 silly audit   'side-channel-list': [ '1.0.1' ],
+80 silly audit   'side-channel-map': [ '1.0.1' ],
+80 silly audit   'side-channel-weakmap': [ '1.0.2' ],
+80 silly audit   sift: [ '17.1.3' ],
+80 silly audit   'simple-update-notifier': [ '2.0.0' ],
+80 silly audit   'socket.io': [ '4.8.3' ],
+80 silly audit   'socket.io-adapter': [ '2.5.8' ],
+80 silly audit   'socket.io-parser': [ '4.2.7' ],
+80 silly audit   'sparse-bitfield': [ '3.0.3' ],
+80 silly audit   statuses: [ '2.0.2' ],
+80 silly audit   'supports-color': [ '5.5.0' ],
+80 silly audit   'to-regex-range': [ '5.0.1' ],
+80 silly audit   toidentifier: [ '1.0.1' ],
+80 silly audit   touch: [ '3.1.1' ],
+80 silly audit   tr46: [ '5.1.1' ],
+80 silly audit   'type-is': [ '1.6.18' ],
+80 silly audit   undefsafe: [ '2.0.5' ],
+80 silly audit   'undici-types': [ '8.3.0' ],
+80 silly audit   unpipe: [ '1.0.0' ],
+80 silly audit   'utils-merge': [ '1.0.1' ],
+80 silly audit   vary: [ '1.1.2' ],
+80 silly audit   'webidl-conversions': [ '7.0.0' ],
+80 silly audit   'whatwg-url': [ '14.2.0' ],
+80 silly audit   ws: [ '8.21.3' ],
+80 silly audit   cloudinary: [ '2.11.0' ],
+80 silly audit   dotenv: [ '16.6.1' ],
+80 silly audit   multer: [ '2.3.0' ],
+80 silly audit   lodash: [ '4.18.1' ],
+80 silly audit   'append-field': [ '1.0.0' ],
+80 silly audit   busboy: [ '1.6.0' ],
+80 silly audit   'concat-stream': [ '2.0.0' ],
+80 silly audit   streamsearch: [ '1.1.0' ],
+80 silly audit   'buffer-from': [ '1.1.2' ],
+80 silly audit   'readable-stream': [ '3.6.2' ],
+80 silly audit   typedarray: [ '0.0.6' ],
+80 silly audit   string_decoder: [ '1.3.0' ],
+80 silly audit   'util-deprecate': [ '1.0.2' ]
+80 silly audit }
+81 verbose reify failed optional dependency E:\grocery-delivery\backend\node_modules\fsevents
+82 silly reify mark deleted [ 'E:\\grocery-delivery\\backend\\node_modules\\fsevents' ]
+83 http cache util-deprecate@https://registry.npmjs.org/util-deprecate/-/util-deprecate-1.0.2.tgz 0ms (cache hit)
+84 http cache string_decoder@https://registry.npmjs.org/string_decoder/-/string_decoder-1.3.0.tgz 0ms (cache hit)
+85 http cache typedarray@https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz 0ms (cache hit)
+86 http cache readable-stream@https://registry.npmjs.org/readable-stream/-/readable-stream-3.6.2.tgz 0ms (cache hit)
+87 http cache buffer-from@https://registry.npmjs.org/buffer-from/-/buffer-from-1.1.2.tgz 0ms (cache hit)
+88 http cache streamsearch@https://registry.npmjs.org/streamsearch/-/streamsearch-1.1.0.tgz 0ms (cache hit)
+89 http cache concat-stream@https://registry.npmjs.org/concat-stream/-/concat-stream-2.0.0.tgz 0ms (cache hit)
+90 http cache busboy@https://registry.npmjs.org/busboy/-/busboy-1.6.0.tgz 0ms (cache hit)
+91 http cache cloudinary@https://registry.npmjs.org/cloudinary/-/cloudinary-2.11.0.tgz 1ms (cache hit)
+92 silly tarball no local data for util-deprecate@https://registry.npmjs.org/util-deprecate/-/util-deprecate-1.0.2.tgz. Extracting by manifest.
+93 silly tarball no local data for string_decoder@https://registry.npmjs.org/string_decoder/-/string_decoder-1.3.0.tgz. Extracting by manifest.
+94 silly tarball no local data for typedarray@https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz. Extracting by manifest.
+95 silly tarball no local data for readable-stream@https://registry.npmjs.org/readable-stream/-/readable-stream-3.6.2.tgz. Extracting by manifest.
+96 silly tarball no local data for buffer-from@https://registry.npmjs.org/buffer-from/-/buffer-from-1.1.2.tgz. Extracting by manifest.
+97 silly tarball no local data for streamsearch@https://registry.npmjs.org/streamsearch/-/streamsearch-1.1.0.tgz. Extracting by manifest.
+98 silly tarball no local data for concat-stream@https://registry.npmjs.org/concat-stream/-/concat-stream-2.0.0.tgz. Extracting by manifest.
+99 http cache multer@https://registry.npmjs.org/multer/-/multer-2.3.0.tgz 0ms (cache hit)
+100 http cache append-field@https://registry.npmjs.org/append-field/-/append-field-1.0.0.tgz 0ms (cache hit)
+101 http cache lodash@https://registry.npmjs.org/lodash/-/lodash-4.18.1.tgz 0ms (cache hit)
+102 silly tarball no local data for busboy@https://registry.npmjs.org/busboy/-/busboy-1.6.0.tgz. Extracting by manifest.
+103 silly tarball no local data for cloudinary@https://registry.npmjs.org/cloudinary/-/cloudinary-2.11.0.tgz. Extracting by manifest.
+104 silly tarball no local data for multer@https://registry.npmjs.org/multer/-/multer-2.3.0.tgz. Extracting by manifest.
+105 silly tarball no local data for append-field@https://registry.npmjs.org/append-field/-/append-field-1.0.0.tgz. Extracting by manifest.
+106 silly tarball no local data for lodash@https://registry.npmjs.org/lodash/-/lodash-4.18.1.tgz. Extracting by manifest.
+107 http fetch POST 200 https://registry.npmjs.org/-/npm/v1/security/advisories/bulk 803ms
+108 silly audit report {}
+109 http fetch GET 200 https://registry.npmjs.org/util-deprecate/-/util-deprecate-1.0.2.tgz 1036ms (cache miss)
+110 http fetch GET 200 https://registry.npmjs.org/string_decoder/-/string_decoder-1.3.0.tgz 1085ms (cache miss)
+111 http fetch GET 200 https://registry.npmjs.org/buffer-from/-/buffer-from-1.1.2.tgz 1263ms (cache miss)
+112 http fetch GET 200 https://registry.npmjs.org/concat-stream/-/concat-stream-2.0.0.tgz 1337ms (cache miss)
+113 http fetch GET 200 https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz 1488ms (cache miss)
+114 http fetch GET 200 https://registry.npmjs.org/append-field/-/append-field-1.0.0.tgz 1657ms (cache miss)
+115 http fetch GET 200 https://registry.npmjs.org/streamsearch/-/streamsearch-1.1.0.tgz 1763ms (cache miss)
+116 http fetch GET 200 https://registry.npmjs.org/multer/-/multer-2.3.0.tgz 1906ms (cache miss)
+117 http fetch GET 200 https://registry.npmjs.org/busboy/-/busboy-1.6.0.tgz 2191ms (cache miss)
+118 http fetch GET 200 https://registry.npmjs.org/readable-stream/-/readable-stream-3.6.2.tgz 2296ms (cache miss)
+119 http fetch GET 200 https://registry.npmjs.org/cloudinary/-/cloudinary-2.11.0.tgz 2855ms (cache miss)
+120 http fetch GET 200 https://registry.npmjs.org/lodash/-/lodash-4.18.1.tgz 8728ms (cache miss)
+121 silly ADD node_modules/util-deprecate
+122 silly ADD node_modules/string_decoder
+123 silly ADD node_modules/typedarray
+124 silly ADD node_modules/readable-stream
+125 silly ADD node_modules/buffer-from
+126 silly ADD node_modules/streamsearch
+127 silly ADD node_modules/concat-stream
+128 silly ADD node_modules/busboy
+129 silly ADD node_modules/append-field
+130 silly ADD node_modules/lodash
+131 silly ADD node_modules/multer
+132 silly ADD node_modules/cloudinary
+133 silly ADD
+134 verbose cwd E:\grocery-delivery\backend
+135 verbose os Windows_NT 10.0.26200
+136 verbose node v22.14.0
+137 verbose npm  v10.9.2
+138 verbose exit 0
+139 info ok
