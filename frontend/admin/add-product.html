@@ -164,19 +164,20 @@
       btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Uploading Image & Adding SKU...`;
 
       try {
-        const formData = new FormData();
-        formData.append('nameKan', kanName);
-        formData.append('nameEng', engName);
-        formData.append('category', cat);
-        formData.append('basePriceKg', basePrice);
-
+        let base64Image = '';
         if (imageFile) {
-          const base64Image = await fileToBase64(imageFile);
-          formData.append('imageData', base64Image);
-          formData.append('image', imageFile);
+          base64Image = await fileToBase64(imageFile);
         }
 
-        await AdminAPI.addProduct(formData);
+        const productPayload = {
+          nameKan: kanName,
+          nameEng: engName,
+          category: cat,
+          basePriceKg: basePrice,
+          image: base64Image
+        };
+
+        await AdminAPI.addProduct(productPayload);
 
         alert(`"${engName}" successfully added to the catalog!`);
         window.location.href = 'inventory.html';
