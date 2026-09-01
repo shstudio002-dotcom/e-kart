@@ -30,6 +30,12 @@ router.post('/', upload.single('image'), async (req, res) => {
       return res.status(400).json({ error: 'nameKan, nameEng, and basePriceKg are required.' });
     }
 
+    if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
+      return res.status(500).json({
+        error: 'Cloudinary is not configured. Update the CLOUDINARY_* values in backend/.env before uploading product images.'
+      });
+    }
+
     let imageUrl = '';
 
     // If an image file is attached, stream it to Cloudinary

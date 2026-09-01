@@ -1,0 +1,20 @@
+0 verbose cli C:\Program Files\nodejs\node.exe C:\Program Files\nodejs\node_modules\npm\bin\npm-cli.js
+1 info using npm@10.9.2
+2 info using node@v22.14.0
+3 silly config load:file:C:\Program Files\nodejs\node_modules\npm\npmrc
+4 silly config load:file:e:\grocery-delivery\backend\.npmrc
+5 silly config load:file:C:\Users\HP\.npmrc
+6 silly config load:file:E:\grocery-delivery\backend\.npm-global\etc\npmrc
+7 verbose title npm ls compression
+8 verbose argv "ls" "--json" "--depth" "0" "--" "compression"
+9 verbose logfile logs-max:10 dir:E:\grocery-delivery\backend\.npm-cache\_logs\2026-09-01T08_13_14_625Z-
+10 verbose logfile E:\grocery-delivery\backend\.npm-cache\_logs\2026-09-01T08_13_14_625Z-debug-0.log
+11 silly logfile start cleaning logs, removing 2 files
+12 silly packumentCache heap:2197815296 maxSize:549453824 maxEntrySize:274726912
+13 silly logfile done cleaning log files
+14 verbose cwd e:\grocery-delivery\backend
+15 verbose os Windows_NT 10.0.26200
+16 verbose node v22.14.0
+17 verbose npm  v10.9.2
+18 verbose exit 0
+19 info ok
