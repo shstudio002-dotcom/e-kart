@@ -2,15 +2,10 @@ const express = require('express');
 const router = express.Router();
 const Order = require('../models/Order');
 
-// GET: Fast indexed lean query (Filters by phone query param if provided, otherwise returns all for Admin)
+// GET: Fast indexed lean query
 router.get('/', async (req, res) => {
   try {
-    const { phone } = req.query;
-    let query = {};
-    if (phone) {
-      query.mobile = phone; // Customer views only their own orders based on mobile number
-    }
-    const orders = await Order.find(query).sort({ createdAt: -1 }).limit(50).lean();
+    const orders = await Order.find().sort({ createdAt: -1 }).limit(50).lean();
     res.status(200).json(orders);
   } catch (err) {
     res.status(500).json({ error: 'Failed to retrieve orders', details: err.message });
@@ -46,7 +41,6 @@ router.post('/', async (req, res) => {
       orderId,
       customerName,
       mobile,
-      userPhone: mobile, // Saves user phone/mobile for secure filtering
       address,
       paymentMethod: paymentMethod || 'Pay in Home (Cash on Delivery)',
       items: items || [],
