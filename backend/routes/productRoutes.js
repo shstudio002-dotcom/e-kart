@@ -38,24 +38,39 @@ router.post('/', upload.single('image'), async (req, res) => {
 
     let imageUrl = '';
 
-    // If an image file is attached, stream it to Cloudinary
     if (req.file) {
-      const uploadPromise = new Promise((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream(
-          { 
-            folder: 'mf_dari_groceries',
-            resource_type: 'image'
-          },
-          (error, result) => {
-            if (error) reject(error);
-            else resolve(result);
-          }
-        );
-        stream.end(req.file.buffer);
-      });
+      const cloudinaryReady = !!(
+        process.env.CLOUDINARY_CLOUD_NAME &&
+        process.env.CLOUDINARY_API_KEY &&
+        process.env.CLOUDINARY_API_SECRET &&
+        process.env.CLOUDINARY_CLOUD_NAME.toLowerCase() !== 'root'
+      );
 
-      const uploadResult = await uploadPromise;
-      imageUrl = uploadResult.secure_url;
+      if (cloudinaryReady) {
+        try {
+          const uploadPromise = new Promise((resolve, reject) => {
+            const stream = cloudinary.uploader.upload_stream(
+              {
+                folder: 'mf_dari_groceries',
+                resource_type: 'image'
+              },
+              (error, result) => {
+                if (error) reject(error);
+                else resolve(result);
+              }
+            );
+            stream.end(req.file.buffer);
+          });
+
+          const uploadResult = await uploadPromise;
+          imageUrl = uploadResult.secure_url;
+        } catch (uploadErr) {
+          console.warn('Cloudinary upload failed; continuing without image:', uploadErr.message);
+          imageUrl = '';
+        }
+      } else {
+        console.warn('Cloudinary credentials are not configured; continuing without image upload.');
+      }
     }
 
     const unitOptions = [
