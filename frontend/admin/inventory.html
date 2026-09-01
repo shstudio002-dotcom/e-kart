@@ -137,6 +137,17 @@
       const tbody = document.getElementById('admin-product-table-body');
       tbody.innerHTML = '';
       products.forEach(p => {
+        // Fallback generator matching 100gm to 10kg if backend options are missing
+        const unitList = (p.unitOptions && p.unitOptions.length > 0) ? p.unitOptions : [
+          { label: '100 gm', multiplier: 0.1 },
+          { label: '250 gm', multiplier: 0.25 },
+          { label: '500 gm', multiplier: 0.5 },
+          { label: '1 kg', multiplier: 1.0 },
+          { label: '2 kg', multiplier: 2.0 },
+          { label: '5 kg', multiplier: 5.0 },
+          { label: '10 kg', multiplier: 10.0 }
+        ];
+
         const tr = document.createElement('tr');
         tr.className = 'hover:bg-slate-50 transition border-b border-slate-100';
         tr.innerHTML = `
@@ -154,7 +165,7 @@
             </div>
           </td>
           <td class="py-3 px-3 text-[11px] text-slate-500">
-            ${(p.unitOptions || []).map(u => u.label).join(', ')}
+            ${unitList.map(u => u.label).join(', ')}
           </td>
           <td class="py-3 px-4 text-right">
             <button onclick="handleDeleteProduct('${p._id || p.id}')" class="text-xs text-rose-600 hover:text-rose-800 font-bold bg-rose-50 px-2.5 py-1 rounded-lg border border-rose-200">
