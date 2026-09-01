@@ -31,7 +31,8 @@ app.use(cors({
   origin: '*',
   methods: ['GET', 'POST', 'PATCH', 'DELETE']
 }));
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 // API Routes (Must be defined before static routing/catch-alls)
 app.use('/api/products', productRoutes);
@@ -40,7 +41,6 @@ app.use('/api/offers', offerRoutes);
 app.use('/api/auth', authRoutes);
 
 // Serve Static Frontend and Admin Folders
-// Fix: Map root static folder so index.html is accessible at /index.html directly matching frontend structure
 app.use(express.static(path.join(__dirname, '../frontend')));
 app.use('/admin', express.static(path.join(__dirname, '../frontend/admin')));
 
