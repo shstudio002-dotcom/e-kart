@@ -148,6 +148,7 @@
             <span class="text-[11px] font-semibold bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-full border border-emerald-200">
               <span id="items-count">0</span> Items Available
             </span>
+
           </div>
 
           <!-- Product Grid View -->
@@ -321,11 +322,15 @@
         const card = document.createElement('div');
         card.className = `bg-white rounded-2xl border ${p.quantity > 0 ? 'border-emerald-500 ring-1 ring-emerald-500 shadow-sm' : 'border-slate-200 hover:border-slate-300'} p-3 flex flex-col justify-between transition-all duration-150`;
 
+        const imageHtml = p.image 
+          ? `<img src="${p.image}" alt="${p.nameEng}" class="w-full h-full object-cover rounded-xl" />`
+          : `<i class="fa-solid fa-basket-shopping opacity-20 absolute"></i>
+             <i class="fa-solid fa-leaf text-emerald-600 relative z-10 text-2xl"></i>`;
+
         card.innerHTML = `
           <div>
             <div class="w-full h-28 bg-slate-100 rounded-xl mb-2.5 flex items-center justify-center text-emerald-600 text-3xl font-bold relative overflow-hidden">
-              <i class="fa-solid fa-basket-shopping opacity-20 absolute"></i>
-              <i class="fa-solid fa-leaf text-emerald-600 relative z-10 text-2xl"></i>
+              ${imageHtml}
             </div>
             <h4 class="font-bold text-slate-900 text-xs sm:text-sm leading-tight line-clamp-1">${p.nameKan}</h4>
             <p class="text-[10px] text-slate-500 leading-tight mb-2 line-clamp-1">${p.nameEng}</p>
@@ -429,7 +434,6 @@
 
       if (selected.length > 0) {
         layoutContainer.className = "grid grid-cols-1 lg:grid-cols-3 gap-6 transition-all duration-300";
-        // Left column spans 2 cols, sidebar spans 1 col
         layoutContainer.children[0].className = "lg:col-span-2 space-y-4";
         sidebar.className = "lg:col-span-1 block";
         
