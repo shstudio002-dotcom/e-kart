@@ -154,6 +154,34 @@
     let localOrders = [];
     let socket = null;
 
+    // Address link helper function for clickable Google Maps navigation
+    function formatAddressLink(addressStr) {
+      if (!addressStr) return 'No address provided';
+
+      const gpsMatch = addressStr.match(/\[GPS:\s*([-\d.]+),\s*([-\d.]+)\]/);
+      
+      if (gpsMatch) {
+        const lat = gpsMatch[1];
+        const lon = gpsMatch[2];
+        const mapsUrl = `https://www.google.com/maps?q=${lat},${lon}`;
+        
+        return `
+          <a href="${mapsUrl}" target="_blank" class="text-emerald-600 font-bold hover:underline inline-flex items-center gap-1">
+            <i class="fa-solid fa-map-location-dot"></i> ${addressStr} 
+            <span class="text-[10px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded ml-1">View Map ↗</span>
+          </a>
+        `;
+      } else {
+        const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addressStr)}`;
+        return `
+          <a href="${mapsUrl}" target="_blank" class="text-emerald-600 hover:underline inline-flex items-center gap-1">
+            <i class="fa-solid fa-map-pin"></i> ${addressStr}
+            <span class="text-[10px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded ml-1">Map ↗</span>
+          </a>
+        `;
+      }
+    }
+
     // Load initial orders from local cache instantly on script parse
     try {
       const stored = JSON.parse(localStorage.getItem('mfd_orders')) || [];
@@ -263,7 +291,7 @@
         const totalAmount = Number(order.totalAmount) || 0;
         const customerName = order.customerName || 'Customer';
         const mobile = order.mobile || '';
-        const address = order.address || 'Address provided';
+        const addressHtml = formatAddressLink(order.address || 'Address provided');
 
         let orderTime = 'Today';
         try {
@@ -291,8 +319,8 @@
                 <i class="fa-solid fa-user text-emerald-600 mr-1"></i> ${customerName}
                 ${mobile ? `<span class="text-slate-400 font-normal ml-2"><i class="fa-solid fa-phone text-slate-400 mr-0.5"></i> <a href="tel:${mobile}" class="text-emerald-700 hover:underline font-semibold">${mobile}</a></span>` : ''}
               </div>
-              <div class="text-xs text-slate-500 mt-0.5 truncate max-w-xs sm:max-w-md">
-                <i class="fa-solid fa-location-dot text-rose-500 mr-1"></i> ${address}
+              <div class="text-xs text-slate-500 mt-0.5">
+                <i class="fa-solid fa-location-dot text-rose-500 mr-1"></i> ${addressHtml}
               </div>
             </div>
             
