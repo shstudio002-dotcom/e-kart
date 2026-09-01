@@ -75,13 +75,32 @@
       return 0;
     }
 
-    // Immediate 0ms paint from local storage filtered by logged-in user phone
+    // Immediate 0ms paint from local storage filtered strictly by logged-in user phone
     function renderOrdersFast() {
       const container = document.getElementById('orders-container');
       if (!container) return;
 
       const user = JSON.parse(localStorage.getItem('mfd_user')) || {};
-      const userPhone = String(user.phone || localStorage.getItem('mfd_user_phone') || '').trim();
+      const userPhone = String(
+        user.phone || 
+        user.mobile || 
+        localStorage.getItem('mfd_user_phone') || 
+        localStorage.getItem('mfd_mobile') || 
+        ''
+      ).trim();
+
+      // If user is not logged in with a phone, block showing global orders completely
+      if (!userPhone) {
+        container.innerHTML = `
+          <div class="bg-white rounded-2xl border border-gray-200 p-8 text-center text-gray-500 space-y-3">
+            <div class="text-4xl">🔒</div>
+            <h3 class="text-sm font-bold text-gray-800">Please Log In to View Your Orders</h3>
+            <p class="text-xs text-gray-400">We need your phone number to securely show only your personal purchases.</p>
+            <a href="profile.html" class="inline-block bg-green-700 text-white text-xs font-bold px-4 py-2 rounded-xl mt-2">Go to Profile / Login</a>
+          </div>
+        `;
+        return;
+      }
 
       let orders = [];
       try {
@@ -97,10 +116,11 @@
         }
       } catch(e) {}
 
-      // Filter by logged-in user phone so customers only see their own orders
-      if (userPhone) {
-        orders = orders.filter(o => !o.userPhone || String(o.userPhone).trim() === userPhone);
-      }
+      // Strict double-filtering locally by user phone (checks both mobile and userPhone)
+      orders = orders.filter(o => {
+        const orderPhone = String(o.mobile || o.userPhone || '').trim();
+        return orderPhone === userPhone;
+      });
 
       // Filter out invalid/empty placeholder orders
       orders = orders.filter(o => o && (o.orderId || o.id || o._id) && Array.isArray(o.items) && o.items.length > 0);
@@ -206,27 +226,35 @@
 
     // Step 2: Background asynchronous connection setup
     window.addEventListener('load', () => {
-      const BACKEND_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+      const BACKEND_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:')
         ? 'http://localhost:5000'
         : window.location.origin;
 
       const user = JSON.parse(localStorage.getItem('mfd_user')) || {};
-      const userPhone = String(user.phone || localStorage.getItem('mfd_user_phone') || '').trim();
+      const userPhone = String(
+        user.phone || 
+        user.mobile || 
+        localStorage.getItem('mfd_user_phone') || 
+        localStorage.getItem('mfd_mobile') || 
+        ''
+      ).trim();
+
+      // STRICT BLOCK: Never fetch orders if phone number is missing
+      if (!userPhone) {
+        renderOrdersFast();
+        return;
+      }
 
       // Fetch ONLY this user's orders from MongoDB via backend API query parameter
-      const endpoint = userPhone 
-        ? `${BACKEND_URL}/api/orders?phone=${encodeURIComponent(userPhone)}` 
-        : `${BACKEND_URL}/api/orders`;
+      const endpoint = `${BACKEND_URL}/api/orders?phone=${encodeURIComponent(userPhone)}`;
 
       // Background REST revalidation
       fetch(endpoint)
         .then(res => res.json())
         .then(apiOrders => {
           if (Array.isArray(apiOrders)) {
-            if (apiOrders.length > 0) {
-              localStorage.setItem('mfd_orders', JSON.stringify(apiOrders));
-              localStorage.removeItem('mfd_last_order');
-            }
+            localStorage.setItem('mfd_orders', JSON.stringify(apiOrders));
+            localStorage.removeItem('mfd_last_order');
             renderOrdersFast();
           }
         })
