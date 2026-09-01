@@ -137,6 +137,15 @@
   <script src="../api-config.js"></script>
   <script src="admin-api.js"></script>
   <script>
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(new Error('Failed to read image file.'));
+        reader.readAsDataURL(file);
+      });
+    }
+
     async function handleAddNewProduct(e) {
       e.preventDefault();
       const kanName = document.getElementById('new-name-kan').value.trim();
@@ -160,7 +169,10 @@
         formData.append('nameEng', engName);
         formData.append('category', cat);
         formData.append('basePriceKg', basePrice);
+
         if (imageFile) {
+          const base64Image = await fileToBase64(imageFile);
+          formData.append('imageData', base64Image);
           formData.append('image', imageFile);
         }
 
@@ -169,7 +181,7 @@
         alert(`"${engName}" successfully added to the catalog!`);
         window.location.href = 'inventory.html';
       } catch (err) {
-        alert('Could not save product: ' + err.message);
+        alert('Could not save product: ' + (err && err.message ? err.message : 'Unknown error'));
         btn.disabled = false;
         btn.innerHTML = `<i class="fa-solid fa-plus"></i> Save & Add to Store Catalog`;
       }

@@ -30,25 +30,27 @@ router.post('/', upload.single('image'), async (req, res) => {
       return res.status(400).json({ error: 'nameKan, nameEng, and basePriceKg are required.' });
     }
 
-    if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
+    const cloudinaryReady = !!(
+      process.env.CLOUDINARY_CLOUD_NAME &&
+      process.env.CLOUDINARY_CLOUD_NAME.toLowerCase() !== 'root' &&
+      process.env.CLOUDINARY_API_KEY &&
+      process.env.CLOUDINARY_API_SECRET
+    );
+
+    if (!cloudinaryReady) {
       return res.status(500).json({
-        error: 'Cloudinary is not configured. Update the CLOUDINARY_* values in backend/.env before uploading product images.'
+        error: 'Cloudinary is not configured. Set valid CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET values in backend/.env.'
       });
     }
 
     let imageUrl = '';
+    const rawImageData = req.body?.imageData || req.body?.image || '';
+    const hasImage = !!(req.file || rawImageData);
 
-    if (req.file) {
-      const cloudinaryReady = !!(
-        process.env.CLOUDINARY_CLOUD_NAME &&
-        process.env.CLOUDINARY_API_KEY &&
-        process.env.CLOUDINARY_API_SECRET &&
-        process.env.CLOUDINARY_CLOUD_NAME.toLowerCase() !== 'root'
-      );
-
-      if (cloudinaryReady) {
-        try {
-          const uploadPromise = new Promise((resolve, reject) => {
+    if (hasImage) {
+      try {
+        if (req.file && req.file.buffer) {
+          const uploadResult = await new Promise((resolve, reject) => {
             const stream = cloudinary.uploader.upload_stream(
               {
                 folder: 'mf_dari_groceries',
@@ -61,15 +63,23 @@ router.post('/', upload.single('image'), async (req, res) => {
             );
             stream.end(req.file.buffer);
           });
-
-          const uploadResult = await uploadPromise;
           imageUrl = uploadResult.secure_url;
-        } catch (uploadErr) {
-          console.warn('Cloudinary upload failed; continuing without image:', uploadErr.message);
-          imageUrl = '';
+        } else if (rawImageData) {
+          const imageSource = rawImageData.startsWith('data:')
+            ? rawImageData
+            : `data:image/png;base64,${rawImageData}`;
+
+          const uploadResult = await cloudinary.uploader.upload(imageSource, {
+            folder: 'mf_dari_groceries',
+            resource_type: 'image'
+          });
+          imageUrl = uploadResult.secure_url;
         }
-      } else {
-        console.warn('Cloudinary credentials are not configured; continuing without image upload.');
+      } catch (uploadErr) {
+        console.error('Cloudinary upload failed:', uploadErr);
+        return res.status(400).json({
+          error: uploadErr && uploadErr.message ? uploadErr.message : 'Cloudinary image upload failed.'
+        });
       }
     }
 
@@ -97,7 +107,7 @@ router.post('/', upload.single('image'), async (req, res) => {
     res.status(201).json(saved);
   } catch (err) {
     console.error('Cloudinary / Product Save Error:', err);
-    res.status(500).json({ error: 'Failed to create product', details: err.message });
+    res.status(500).json({ error: err && err.message ? err.message : 'Failed to create product' });
   }
 });
 

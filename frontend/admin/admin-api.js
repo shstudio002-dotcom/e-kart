@@ -77,16 +77,27 @@ const AdminAPI = {
     try {
       const res = await fetch(`${API_BASE_URL}/products`, {
         method: 'POST',
-        // DO NOT add headers: { 'Content-Type': 'application/json' } here. 
-        // Leaving headers empty lets the browser handle the multipart FormData boundary automatically.
         body: formData
       });
-      if (!res.ok) throw new Error('Product add failed');
-      const saved = await res.json();
+
+      const text = await res.text();
+      let payload = {};
+      if (text) {
+        try {
+          payload = JSON.parse(text);
+        } catch {
+          payload = { error: text };
+        }
+      }
+
+      if (!res.ok) {
+        throw new Error(payload.error || payload.message || 'Product add failed');
+      }
+
       let prods = JSON.parse(localStorage.getItem('mfd_catalog')) || [];
-      prods.push(saved);
+      prods.push(payload);
       localStorage.setItem('mfd_catalog', JSON.stringify(prods));
-      return saved;
+      return payload;
     } catch (e) {
       console.error('Add product network/server error:', e);
       throw e;
