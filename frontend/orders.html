@@ -8,6 +8,8 @@
   
   <!-- Non-blocking precompiled stylesheet -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" />
+  <!-- Loaded Socket.io locally via Express server to completely prevent connection timeouts -->
+  <script src="/socket.io/socket.io.js"></script>
   
   <style>
     body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -57,9 +59,6 @@
     </div>
   </nav>
 
-  <!-- Scripts placed at the bottom so HTML is never blocked -->
-  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js" defer></script>
-
   <script>
     const ROUTE_POINTS = [
       { key: 'point_hub', label: '1. Hub (0%)', pct: '5%', badge: 'Started at Hub' },
@@ -85,12 +84,19 @@
       try {
         orders = JSON.parse(localStorage.getItem('mfd_orders')) || [];
         const lastOrder = JSON.parse(localStorage.getItem('mfd_last_order'));
-        if (lastOrder && !orders.some(o => (o.orderId || o.id) === (lastOrder.orderId || lastOrder.id))) {
-          orders.unshift(lastOrder);
+        if (lastOrder) {
+          const lastId = String(lastOrder.orderId || lastOrder.id || lastOrder._id || '').trim();
+          // Only unshift lastOrder if it isn't already in orders and isn't empty
+          if (lastId && !orders.some(o => String(o.orderId || o.id || o._id || '').trim() === lastId)) {
+            orders.unshift(lastOrder);
+          } else {
+            // If it's already in orders, clear mfd_last_order so it doesn't cause duplication or ghost resurrections
+            localStorage.removeItem('mfd_last_order');
+          }
         }
       } catch(e) {}
 
-      // Filter out invalid/empty placeholder orders so blank states work properly
+      // Filter out invalid/empty placeholder orders
       orders = orders.filter(o => o && (o.orderId || o.id || o._id) && Array.isArray(o.items) && o.items.length > 0);
       localStorage.setItem('mfd_orders', JSON.stringify(orders));
 
@@ -123,7 +129,7 @@
         const activePointIdx = getPointIndex(order.status);
         const pointData = ROUTE_POINTS[activePointIdx];
         const orderItems = Array.isArray(order.items) ? order.items : [];
-        const orderId = order.orderId || order.id || 'MFD-00000';
+        const orderId = order.orderId || order.id || order._id || 'MFD-00000';
         
         let orderTime = 'Today';
         if (order.createdAt) {
@@ -194,7 +200,9 @@
 
     // Step 2: Background asynchronous connection setup
     window.addEventListener('load', () => {
-      const BACKEND_URL = 'http://localhost:5000';
+      const BACKEND_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+        ? 'http://localhost:5000'
+        : window.location.origin;
 
       // Background REST revalidation
       fetch(`${BACKEND_URL}/api/orders`)
@@ -206,23 +214,20 @@
               localStorage.removeItem('mfd_last_order');
             } else {
               localStorage.setItem('mfd_orders', JSON.stringify(apiOrders));
-              const lastOrder = JSON.parse(localStorage.getItem('mfd_last_order'));
-              const serverIds = new Set(apiOrders.map(o => o.orderId || o.id));
-              if (lastOrder && !serverIds.has(lastOrder.orderId || lastOrder.id)) {
-                localStorage.removeItem('mfd_last_order');
-              }
+              // Clear mfd_last_order if the server has synchronized the orders list
+              localStorage.removeItem('mfd_last_order');
             }
             renderOrdersFast();
           }
         })
         .catch(() => {});
 
-      // Background WebSocket initialization
+      // Background WebSocket initialization using local server route
       if (typeof io !== 'undefined') {
-        const socket = io(BACKEND_URL, { transports: ['websocket'], upgrade: false });
+        const socket = io(BACKEND_URL, { transports: ['websocket', 'polling'], upgrade: false });
         socket.on('order_status_updated', (data) => {
           let orders = JSON.parse(localStorage.getItem('mfd_orders')) || [];
-          const ord = orders.find(o => (o.orderId || o.id) === data.orderId);
+          const ord = orders.find(o => (o.orderId || o.id || o._id) === data.orderId);
           if (ord) {
             ord.status = data.status;
             localStorage.setItem('mfd_orders', JSON.stringify(orders));

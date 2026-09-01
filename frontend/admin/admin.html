@@ -8,7 +8,8 @@
   
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <!-- Fixed: Loaded Socket.io locally via Express server to completely prevent CDN connection timeouts -->
+  <script src="/socket.io/socket.io.js"></script>
 
   <style>
     body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -146,9 +147,21 @@
   <script src="../api-config.js"></script>
   <script src="admin-api.js"></script>
   <script>
-    const BACKEND_URL = window.location.origin.includes('localhost') ? 'http://localhost:5000' : window.location.origin;
+    const BACKEND_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+      ? 'http://localhost:5000'
+      : window.location.origin;
+
     let localOrders = [];
     let socket = null;
+
+    // Load initial orders from local cache instantly on script parse
+    try {
+      const stored = JSON.parse(localStorage.getItem('mfd_orders')) || [];
+      if (stored.length > 0) {
+        localOrders = stored;
+        renderAdminList();
+      }
+    } catch (e) {}
 
     try {
       if (typeof io !== 'undefined') {
@@ -359,15 +372,6 @@
 
     async function fetchAndRenderAdminOrders(showToast = false) {
       try {
-        const stored = JSON.parse(localStorage.getItem('mfd_orders')) || [];
-        if (stored.length > 0) {
-          localOrders = stored;
-          cleanAndDeduplicateOrders();
-          renderAdminList();
-        }
-      } catch (e) {}
-
-      try {
         const apiOrders = await AdminAPI.getOrders();
         if (Array.isArray(apiOrders)) {
           const orderMap = new Map();
@@ -420,21 +424,40 @@
 
         try {
           await AdminAPI.deleteOrder(orderId);
-        } catch (e) {}
+        } catch (e) {
+          console.warn('Failed to delete order from database:', e);
+        }
       }
     }
 
-    function clearDeliveredOrders() {
-      localOrders = localOrders.filter(o => o.status !== 'point_doorstep');
-      localStorage.setItem('mfd_orders', JSON.stringify(localOrders));
-      renderAdminList();
+    async function clearDeliveredOrders() {
+      const deliveredOrders = localOrders.filter(o => o.status === 'point_doorstep');
+      if (deliveredOrders.length === 0) {
+        alert('No delivered orders to clear.');
+        return;
+      }
+
+      if (confirm(`Clear ${deliveredOrders.length} delivered order(s)?`)) {
+        localOrders = localOrders.filter(o => o.status !== 'point_doorstep');
+        localStorage.setItem('mfd_orders', JSON.stringify(localOrders));
+        renderAdminList();
+
+        for (const order of deliveredOrders) {
+          const orderId = order.orderId || order.id || order._id;
+          try {
+            await AdminAPI.deleteOrder(orderId);
+          } catch (e) {
+            console.warn(`Failed to delete delivered order ${orderId} from database:`, e);
+          }
+        }
+      }
     }
 
-    cleanAndDeduplicateOrders();
-    fetchAndRenderAdminOrders(false);
     window.addEventListener('DOMContentLoaded', () => {
       cleanAndDeduplicateOrders();
+      renderAdminList();
       fetchAndRenderAdminOrders(false);
+
       try {
         AdminAPI.getProducts().then(prods => {
           document.querySelectorAll('.admin-products-count-badge').forEach(el => el.textContent = (prods || []).length);

@@ -122,7 +122,7 @@
         </div>
 
         <div class="pt-2">
-          <button type="submit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white font-bold rounded-xl shadow-md text-xs sm:text-sm transition flex items-center justify-center gap-1.5">
+          <button type="submit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white font-bold rounded-xl shadow-md text-xs sm:text-sm transition flex items-center justify-center gap-1.5 cursor-pointer">
             <i class="fa-solid fa-floppy-disk"></i> Save & Publish Offer
           </button>
         </div>
@@ -156,13 +156,18 @@
   <script src="admin-api.js"></script>
   <script>
     async function loadOfferData() {
-      const offer = await AdminAPI.getOffer();
-      document.getElementById('off-tag').value = offer.tag || 'OFFER OF ANY';
-      document.getElementById('off-title').value = offer.title || 'Flat 20% OFF Daily Groceries!';
-      document.getElementById('off-sub').value = offer.subtitle || 'Fresh farm staples delivered in 30-40 mins.';
-      document.getElementById('off-fee').value = offer.deliveryFee || '₹0';
-      document.getElementById('off-speed').value = offer.speed || '35m';
-
+      try {
+        const offer = await AdminAPI.getOffer();
+        if (offer) {
+          document.getElementById('off-tag').value = offer.tag || 'OFFER OF ANY';
+          document.getElementById('off-title').value = offer.title || 'Flat 20% OFF Daily Groceries!';
+          document.getElementById('off-sub').value = offer.subtitle || 'Fresh farm staples delivered in 30-40 mins.';
+          document.getElementById('off-fee').value = offer.deliveryFee || '₹0';
+          document.getElementById('off-speed').value = offer.speed || '35m';
+        }
+      } catch (e) {
+        console.warn('Failed to load offer from server:', e);
+      }
       updateLivePreview();
     }
 
@@ -176,22 +181,28 @@
 
     async function saveOfferSettings(e) {
       e.preventDefault();
-      await AdminAPI.saveOffer({
-        tag: document.getElementById('off-tag').value.trim(),
-        title: document.getElementById('off-title').value.trim(),
-        subtitle: document.getElementById('off-sub').value.trim(),
-        deliveryFee: document.getElementById('off-fee').value.trim(),
-        speed: document.getElementById('off-speed').value.trim()
-      });
-      alert('Offer published to customer app!');
+      try {
+        await AdminAPI.saveOffer({
+          tag: document.getElementById('off-tag').value.trim(),
+          title: document.getElementById('off-title').value.trim(),
+          subtitle: document.getElementById('off-sub').value.trim(),
+          deliveryFee: document.getElementById('off-fee').value.trim(),
+          speed: document.getElementById('off-speed').value.trim()
+        });
+        alert('Offer published to customer app!');
+      } catch (err) {
+        alert('Failed to publish offer to backend.');
+      }
     }
 
     window.addEventListener('DOMContentLoaded', async () => {
       loadOfferData();
-      const orders = await AdminAPI.getOrders();
-      const products = await AdminAPI.getProducts();
-      document.querySelectorAll('.admin-orders-count-badge').forEach(el => el.textContent = orders.length);
-      document.querySelectorAll('.admin-products-count-badge').forEach(el => el.textContent = products.length);
+      try {
+        const orders = await AdminAPI.getOrders();
+        const products = await AdminAPI.getProducts();
+        document.querySelectorAll('.admin-orders-count-badge').forEach(el => el.textContent = orders.length);
+        document.querySelectorAll('.admin-products-count-badge').forEach(el => el.textContent = products.length);
+      } catch (e) {}
     });
   </script>
 </body>

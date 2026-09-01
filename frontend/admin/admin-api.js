@@ -1,3 +1,4 @@
+// admin/admin-api.js
 const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
   ? 'http://localhost:5000/api'
   : 'https://e-kart-y4af.onrender.com/api';
@@ -35,6 +36,17 @@ const AdminAPI = {
       localStorage.setItem('mfd_orders', JSON.stringify(orders));
       return { success: true, status };
     }
+  },
+
+  async deleteOrder(orderId) {
+    const res = await fetch(`${API_BASE_URL}/orders/${orderId}`, {
+      method: 'DELETE'
+    });
+    let orders = JSON.parse(localStorage.getItem('mfd_orders')) || [];
+    orders = orders.filter(o => (o.orderId || o.id || o._id) !== orderId);
+    localStorage.setItem('mfd_orders', JSON.stringify(orders));
+    if (!res.ok) throw new Error('Order deletion failed');
+    return await res.json();
   },
 
   async getProducts() {
@@ -82,5 +94,40 @@ const AdminAPI = {
     prods = prods.filter(item => (item._id || item.id) !== productId);
     localStorage.setItem('mfd_catalog', JSON.stringify(prods));
     return await res.json();
+  },
+
+  async getOffer() {
+    try {
+      const res = await fetch(`${API_BASE_URL}/offers`);
+      if (!res.ok) throw new Error('Offer fetch failed');
+      const data = await res.json();
+      localStorage.setItem('mfd_active_offer', JSON.stringify(data));
+      return data;
+    } catch (e) {
+      return JSON.parse(localStorage.getItem('mfd_active_offer')) || {
+        tag: 'OFFER OF ANY',
+        title: 'Flat 20% OFF Daily Groceries!',
+        subtitle: 'Fresh farm staples delivered in 30-40 mins.',
+        deliveryFee: '₹0',
+        speed: '35m'
+      };
+    }
+  },
+
+  async saveOffer(offerData) {
+    try {
+      const res = await fetch(`${API_BASE_URL}/offers`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(offerData)
+      });
+      if (!res.ok) throw new Error('Offer save failed');
+      const data = await res.json();
+      localStorage.setItem('mfd_active_offer', JSON.stringify(offerData));
+      return data;
+    } catch (e) {
+      localStorage.setItem('mfd_active_offer', JSON.stringify(offerData));
+      return { success: true, offer: offerData };
+    }
   }
 };
