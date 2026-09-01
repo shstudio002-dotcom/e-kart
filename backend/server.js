@@ -6,7 +6,6 @@ const cors = require('cors');
 const path = require('path');
 require('dotenv').config();
 
-
 const Product = require('./models/Product');
 const productRoutes = require('./routes/productRoutes');
 const orderRoutes = require('./routes/orderRoutes');
@@ -16,21 +15,21 @@ const authRoutes = require('./routes/authRoutes');
 const app = express();
 const server = http.createServer(app);
 
-// Socket.io Configuration
+// Socket.io Configuration (Added 'PUT' method support)
 const io = new Server(server, {
   cors: {
     origin: '*',
-    methods: ['GET', 'POST', 'PATCH', 'DELETE']
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']
   }
 });
 
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/mf_dari_grocery';
 
-// Middleware
+// Middleware (Added 'PUT' method support)
 app.use(cors({
   origin: '*',
-  methods: ['GET', 'POST', 'PATCH', 'DELETE']
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']
 }));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));

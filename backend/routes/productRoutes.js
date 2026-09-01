@@ -1,3 +1,4 @@
+// routes/productRoutes.js
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
@@ -111,11 +112,11 @@ router.post('/', upload.single('image'), async (req, res) => {
   }
 });
 
-// PATCH: Update product base price
-router.patch('/:id/price', async (req, res) => {
+// PATCH & PUT: Update product base price (Matched to /api/products/:id to prevent 404s)
+router.patch('/:id', async (req, res) => {
   try {
     const { basePriceKg } = req.body;
-    if (!basePriceKg || isNaN(basePriceKg)) {
+    if (basePriceKg === undefined || isNaN(basePriceKg)) {
       return res.status(400).json({ error: 'Valid basePriceKg is required.' });
     }
 
@@ -129,7 +130,30 @@ router.patch('/:id/price', async (req, res) => {
       return res.status(404).json({ error: 'Product not found.' });
     }
 
-    res.status(200).json(updated);
+    res.status(200).json({ success: true, product: updated });
+  } catch (err) {
+    res.status(400).json({ error: 'Failed to update price', details: err.message });
+  }
+});
+
+router.put('/:id', async (req, res) => {
+  try {
+    const { basePriceKg } = req.body;
+    if (basePriceKg === undefined || isNaN(basePriceKg)) {
+      return res.status(400).json({ error: 'Valid basePriceKg is required.' });
+    }
+
+    const updated = await Product.findByIdAndUpdate(
+      req.params.id,
+      { basePriceKg: Number(basePriceKg) },
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({ error: 'Product not found.' });
+    }
+
+    res.status(200).json({ success: true, product: updated });
   } catch (err) {
     res.status(400).json({ error: 'Failed to update price', details: err.message });
   }

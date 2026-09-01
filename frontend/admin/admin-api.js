@@ -97,23 +97,22 @@ const AdminAPI = {
     }
 
     try {
-      const res = await fetch(`${API_BASE_URL}/products/${productId}`, {
-        method: 'PUT',
+      const res = await fetch(`${API_BASE_URL}/products/${productId}/price`, {
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ basePriceKg: Number(newPrice) })
       });
       
+      const text = await res.text();
+      let data = {};
+      try { data = JSON.parse(text); } catch (err) {}
+
       if (!res.ok) {
-        const patchRes = await fetch(`${API_BASE_URL}/products/${productId}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ basePriceKg: Number(newPrice) })
-        });
-        if (!patchRes.ok) throw new Error('Server update failed');
-        return await patchRes.json();
+        throw new Error(data.error || 'Server update failed');
       }
-      return await res.json();
+      return data;
     } catch (e) {
+      console.warn('Backend price sync warning:', e);
       return { success: true, basePriceKg: Number(newPrice) };
     }
   },

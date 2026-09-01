@@ -215,42 +215,8 @@
         return;
       }
 
-      // 1. Force update local storage cache immediately so it never reverts visually
-      try {
-        let catalog = JSON.parse(localStorage.getItem('mfd_catalog')) || [];
-        const item = catalog.find(p => String(p._id || p.id) === String(id));
-        if (item) {
-          item.basePriceKg = priceVal;
-          localStorage.setItem('mfd_catalog', JSON.stringify(catalog));
-        }
-      } catch (e) {}
-
-      // 2. Send update to backend and handle response
-      try {
-        const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-          ? 'http://localhost:5000/api'
-          : 'https://e-kart-y4af.onrender.com/api';
-
-        const res = await fetch(`${API_BASE_URL}/products/${id}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ basePriceKg: priceVal })
-        });
-        
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Update failed');
-
-        // Sync the returned backend product data back into local storage cache
-        let catalog = JSON.parse(localStorage.getItem('mfd_catalog')) || [];
-        const idx = catalog.findIndex(p => String(p._id || p.id) === String(id));
-        if (idx !== -1 && data.product) {
-          catalog[idx] = data.product;
-          localStorage.setItem('mfd_catalog', JSON.stringify(catalog));
-        }
-      } catch (err) {
-        console.warn('Backend sync warning, keeping local cache update:', err);
-      }
-
+      // Call AdminAPI helper method which handles local cache update and backend PATCH request
+      await AdminAPI.updateProductPrice(id, priceVal);
       renderAdminProducts();
     }
 
