@@ -96,11 +96,16 @@
           </div>
         </div>
 
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Product Image (ಚಿತ್ರ ಆಯ್ಕೆಮಾಡಿ)</label>
+          <input type="file" id="new-product-image" accept="image/*" class="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:outline-none bg-white file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer" />
+        </div>
+
         <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200 text-[11px] text-slate-600">
           <i class="fa-solid fa-info-circle text-emerald-600 mr-1"></i> Standard pack variations (100g to 10kg) are generated automatically.
         </div>
 
-        <button type="submit" id="btn-submit-sku" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white font-bold rounded-xl shadow-md text-xs sm:text-sm transition flex items-center justify-center gap-1.5">
+        <button type="submit" id="btn-submit-sku" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white font-bold rounded-xl shadow-md text-xs sm:text-sm transition flex items-center justify-center gap-1.5 cursor-pointer">
           <i class="fa-solid fa-plus"></i> Save & Add to Store Catalog
         </button>
       </form>
@@ -137,6 +142,7 @@
       const engName = document.getElementById('new-name-eng').value.trim();
       const cat = document.getElementById('new-category').value;
       const basePrice = parseFloat(document.getElementById('new-base-price').value);
+      const imageFile = document.getElementById('new-product-image').files[0];
 
       if (!kanName || !engName || isNaN(basePrice) || basePrice <= 0) {
         alert('Please fill in valid name and price fields.');
@@ -145,15 +151,19 @@
 
       const btn = document.getElementById('btn-submit-sku');
       btn.disabled = true;
-      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Adding to Catalog...`;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Uploading Image & Adding SKU...`;
 
       try {
-        await AdminAPI.addProduct({
-          nameKan: kanName,
-          nameEng: engName,
-          category: cat,
-          basePriceKg: basePrice
-        });
+        const formData = new FormData();
+        formData.append('nameKan', kanName);
+        formData.append('nameEng', engName);
+        formData.append('category', cat);
+        formData.append('basePriceKg', basePrice);
+        if (imageFile) {
+          formData.append('image', imageFile);
+        }
+
+        await AdminAPI.addProduct(formData);
 
         alert(`"${engName}" successfully added to the catalog!`);
         window.location.href = 'inventory.html';
