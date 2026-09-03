@@ -246,8 +246,7 @@
       }
 
       // Fetch ONLY this user's orders from MongoDB via backend API query parameter
-      const endpoint = `${BACKEND_URL}/api/orders?phone=${encodeURIComponent(userPhone)}`;
-
+      const endpoint = `https://e-kart-y4af.onrender.com/api/orders?phone=${encodeURIComponent(userPhone)}`;
       // Background REST revalidation
       fetch(endpoint)
         .then(res => res.json())
