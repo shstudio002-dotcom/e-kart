@@ -86,128 +86,99 @@
     </div>
   </header>
 
-  <!-- Main Content Container with Dynamic Split View -->
+  <!-- Main Content Container (Always Full Width Now) -->
   <main class="max-w-7xl mx-auto px-3 sm:px-6 py-4 flex-grow w-full">
-    <div id="main-layout-container" class="grid grid-cols-1 gap-6 transition-all duration-300">
+    <div class="space-y-4">
       
-      <!-- Left Column: Banner, Search, Categories, and Product Grid -->
-      <div class="space-y-4">
-        
-        <!-- Dynamic Offer Banner Controlled via Backend -->
-        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-800 to-teal-800 text-white p-4 sm:p-6 shadow-md">
-          <div class="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-            <div class="space-y-1">
-              <span id="cust-banner-tag" class="text-[10px] font-black uppercase tracking-wider bg-amber-400 text-slate-950 px-2 py-0.5 rounded-md inline-block">OFFER OF ANY</span>
-              <h2 id="cust-banner-title" class="text-xl sm:text-2xl font-black">Flat 20% OFF Daily Groceries!</h2>
-              <p id="cust-banner-subtitle" class="text-xs text-emerald-100">Fresh farm staples, rice, dairy & organic produce delivered in 30-40 mins.</p>
-            </div>
-            <div class="bg-white/10 backdrop-blur-md px-3 py-2 rounded-xl border border-white/20 text-center flex items-center gap-3 self-stretch sm:self-auto justify-around">
-              <div>
-                <span id="cust-banner-fee" class="block text-base sm:text-lg font-black text-amber-300">₹0</span>
-                <span class="text-[10px] text-emerald-100 uppercase">Delivery</span>
-              </div>
-              <div class="h-6 w-px bg-white/20"></div>
-              <div>
-                <span id="cust-banner-speed" class="block text-base sm:text-lg font-black text-white">35m</span>
-                <span class="text-[10px] text-emerald-100 uppercase">Speed</span>
-              </div>
-            </div>
+      <!-- Dynamic Offer Banner Controlled via Backend -->
+      <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-800 to-teal-800 text-white p-4 sm:p-6 shadow-md">
+        <div class="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div class="space-y-1">
+            <span id="cust-banner-tag" class="text-[10px] font-black uppercase tracking-wider bg-amber-400 text-slate-950 px-2 py-0.5 rounded-md inline-block">OFFER OF ANY</span>
+            <h2 id="cust-banner-title" class="text-xl sm:text-2xl font-black">Flat 20% OFF Daily Groceries!</h2>
+            <p id="cust-banner-subtitle" class="text-xs text-emerald-100">Fresh farm staples, rice, dairy & organic produce delivered in 30-40 mins.</p>
           </div>
-        </div>
-
-        <!-- Search and Category Filters -->
-        <div class="bg-white p-3 sm:p-4 rounded-2xl border border-slate-200 shadow-xs space-y-3">
-          <div class="relative">
-            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-            <input 
-              type="text" 
-              id="search-input" 
-              oninput="handleSearch(this.value)" 
-              placeholder="Search of all (ಅಕ್ಕಿ, Rice, Dal, Eggs, Sugar, Oil...)" 
-              class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 transition"
-            />
-          </div>
-
-          <div class="flex items-center gap-2 overflow-x-auto no-scrollbar text-xs">
-            <button onclick="setCategory('all', this)" class="cat-pill whitespace-nowrap px-3.5 py-1.5 rounded-xl font-bold bg-emerald-600 text-white shadow-xs transition">All Items</button>
-            <button onclick="setCategory('grains', this)" class="cat-pill whitespace-nowrap px-3.5 py-1.5 rounded-xl font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">Grains & Pulses</button>
-            <button onclick="setCategory('dairy', this)" class="cat-pill whitespace-nowrap px-3.5 py-1.5 rounded-xl font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">Dairy & Eggs</button>
-            <button onclick="setCategory('staples', this)" class="cat-pill whitespace-nowrap px-3.5 py-1.5 rounded-xl font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">Staples & Oils</button>
-          </div>
-        </div>
-
-        <!-- Product Catalog Section -->
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-xs p-4 sm:p-5 space-y-4">
-          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+          <div class="bg-white/10 backdrop-blur-md px-3 py-2 rounded-xl border border-white/20 text-center flex items-center gap-3 self-stretch sm:self-auto justify-around">
             <div>
-              <h3 class="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2">
-                <i class="fa-solid fa-boxes-stacked text-emerald-600"></i> Grocery Catalog (ಆಹಾರ ಪದಾರ್ಥಗಳು)
-              </h3>
-              <p class="text-[11px] text-slate-500">Click on any product to add to your order</p>
+              <span id="cust-banner-fee" class="block text-base sm:text-lg font-black text-amber-300">₹0</span>
+              <span class="text-[10px] text-emerald-100 uppercase">Delivery</span>
             </div>
-            <span class="text-[11px] font-semibold bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-full border border-emerald-200">
-              <span id="items-count">0</span> Items Available
-            </span>
-
-          </div>
-
-          <!-- Product Grid View -->
-          <div id="catalog-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-            <!-- Dynamically populated via backend -->
+            <div class="h-6 w-px bg-white/20"></div>
+            <div>
+              <span id="cust-banner-speed" class="block text-base sm:text-lg font-black text-white">35m</span>
+              <span class="text-[10px] text-emerald-100 uppercase">Speed</span>
+            </div>
           </div>
         </div>
-
       </div>
 
-      <!-- Right Column: Live Splitted Cart/Order Sidebar (Appears only when items are added) -->
-      <div id="live-cart-sidebar" class="hidden">
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-lg p-4 sm:p-5 sticky top-24 space-y-4">
-          
-          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+      <!-- Search and Category Filters -->
+      <div class="bg-white p-3 sm:p-4 rounded-2xl border border-slate-200 shadow-xs space-y-3">
+        <div class="relative">
+          <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+          <input 
+            type="text" 
+            id="search-input" 
+            oninput="handleSearch(this.value)" 
+            placeholder="Search of all (ಅಕ್ಕಿ, Rice, Dal, Eggs, Sugar, Oil...)" 
+            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 transition"
+          />
+        </div>
+
+        <div class="flex items-center gap-2 overflow-x-auto no-scrollbar text-xs">
+          <button onclick="setCategory('all', this)" class="cat-pill whitespace-nowrap px-3.5 py-1.5 rounded-xl font-bold bg-emerald-600 text-white shadow-xs transition">All Items</button>
+          <button onclick="setCategory('grains', this)" class="cat-pill whitespace-nowrap px-3.5 py-1.5 rounded-xl font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">Grains & Pulses</button>
+          <button onclick="setCategory('dairy', this)" class="cat-pill whitespace-nowrap px-3.5 py-1.5 rounded-xl font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">Dairy & Eggs</button>
+          <button onclick="setCategory('staples', this)" class="cat-pill whitespace-nowrap px-3.5 py-1.5 rounded-xl font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">Staples & Oils</button>
+        </div>
+      </div>
+
+      <!-- Product Catalog Section -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-xs p-4 sm:p-5 space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+          <div>
             <h3 class="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2">
-              <i class="fa-solid fa-cart-shopping text-emerald-600"></i> My Order (ನಮ್ಮ ಆದೇಶ)
+              <i class="fa-solid fa-boxes-stacked text-emerald-600"></i> Grocery Catalog (ಆಹಾರ ಪದಾರ್ಥಗಳು)
             </h3>
-            <span id="sidebar-total-items-badge" class="text-[11px] font-bold bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-full border border-emerald-200">0 Items</span>
+            <p class="text-[11px] text-slate-500">Click on any product to add to your order</p>
           </div>
+          <span class="text-[11px] font-semibold bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-full border border-emerald-200">
+            <span id="items-count">0</span> Items Available
+          </span>
+        </div>
 
-          <!-- Selected Items List -->
-          <div id="sidebar-items-container" class="space-y-3 max-h-[380px] overflow-y-auto custom-scrollbar pr-1">
-            <!-- Dynamically populated selected items -->
-          </div>
-
-          <!-- Cost Summary -->
-          <div class="border-t border-slate-100 pt-3 space-y-2 text-xs sm:text-sm">
-            <div class="flex justify-between text-slate-600">
-              <span>Subtotal</span>
-              <span id="sidebar-subtotal" class="font-bold text-slate-900">₹0</span>
-            </div>
-            <div class="flex justify-between text-slate-600">
-              <span>Delivery Charges</span>
-              <span class="font-bold text-emerald-600">FREE</span>
-            </div>
-          </div>
-
-          <!-- Grand Total -->
-          <div class="border-t border-slate-200 pt-3 flex items-center justify-between">
-            <span class="font-black text-slate-900 text-sm sm:text-base">Total Amount</span>
-            <span id="sidebar-grand-total" class="font-black text-emerald-700 text-lg sm:text-xl">₹0</span>
-          </div>
-
-          <!-- Actions -->
-          <div class="pt-2 grid grid-cols-2 gap-2">
-            <button onclick="clearCatalogSelection()" class="py-2.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition flex items-center justify-center gap-1.5 cursor-pointer">
-              <i class="fa-solid fa-trash text-rose-500"></i> Clear Order
-            </button>
-            <button onclick="addCatalogToCartAndRedirect()" class="py-2.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition flex items-center justify-center gap-1.5 shadow-md shadow-emerald-200 cursor-pointer">
-              <span>Place Order</span> <i class="fa-solid fa-arrow-right"></i>
-            </button>
-          </div>
-
+        <!-- Product Grid View -->
+        <div id="catalog-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+          <!-- Dynamically populated via backend -->
         </div>
       </div>
 
     </div>
   </main>
+
+  <!-- Floating Quick Cart Bar (Replaces Split Screen View) -->
+  <div id="floating-cart-bar" class="fixed bottom-16 left-3 right-3 sm:left-auto sm:right-6 sm:w-96 z-50 transition-all duration-300 transform translate-y-24 opacity-0 pointer-events-none">
+    <div class="bg-slate-900 text-white rounded-2xl shadow-2xl p-4 border border-slate-800 flex items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-11 bg-emerald-600 text-white rounded-xl flex items-center justify-center font-bold text-base shadow-md shadow-emerald-900/50 relative">
+          <i class="fa-solid fa-cart-shopping"></i>
+          <span id="float-total-items-badge" class="absolute -top-1.5 -right-1.5 bg-amber-400 text-slate-950 text-[10px] font-black px-1.5 py-0.2 rounded-full border border-slate-900">0</span>
+        </div>
+        <div>
+          <p class="text-[10px] text-slate-400 uppercase font-semibold">Total Amount</p>
+          <h4 id="float-grand-total" class="text-base sm:text-lg font-black text-amber-300 leading-none">₹0</h4>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="clearCatalogSelection()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold rounded-xl text-xs transition cursor-pointer">
+          <i class="fa-solid fa-trash text-rose-400"></i>
+        </button>
+        <button onclick="addCatalogToCartAndRedirect()" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs transition flex items-center gap-1.5 shadow-lg shadow-emerald-900/40 cursor-pointer">
+          <span>View Cart & Checkout</span> <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- Universal Bottom Navigation Bar -->
   <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40 shadow-xl py-2.5">
@@ -279,7 +250,7 @@
       }));
 
       renderCatalog();
-      updateSidebarAndLayout();
+      updateFloatingCartBar();
     }
 
     function getItemPrice(prod) {
@@ -313,7 +284,7 @@
             No groceries found matching "${searchQuery}".
           </div>
         `;
-        updateSidebarAndLayout();
+        updateFloatingCartBar();
         return;
       }
 
@@ -384,71 +355,27 @@
         grid.appendChild(card);
       });
 
-      updateSidebarAndLayout();
+      updateFloatingCartBar();
     }
 
-    function renderSidebar() {
-      const container = document.getElementById('sidebar-items-container');
-      container.innerHTML = '';
-
+    function updateFloatingCartBar() {
       const selected = products.filter(p => p.quantity > 0);
-
-      selected.forEach(p => {
-        const currentPrice = getItemPrice(p);
-        const subtotal = currentPrice * p.quantity;
-        const unit = p.unitOptions[p.selectedUnitIndex] || { label: '1 kg' };
-
-        const itemRow = document.createElement('div');
-        itemRow.className = 'flex items-center justify-between gap-2 p-2 bg-slate-50 rounded-xl border border-slate-100 text-xs';
-
-        itemRow.innerHTML = `
-          <div class="flex-grow min-w-0">
-            <h5 class="font-bold text-slate-900 truncate">${p.nameKan}</h5>
-            <p class="text-[10px] text-slate-500">${unit.label} • ₹${currentPrice} each</p>
-          </div>
-
-          <div class="flex items-center gap-1.5 flex-shrink-0">
-            <div class="inline-flex items-center border border-slate-200 bg-white rounded-lg p-0.5">
-              <button onclick="updateQuantity('${p.id}', -1)" class="w-5 h-5 flex items-center justify-center hover:bg-slate-100 text-slate-600 font-bold text-[10px] cursor-pointer">
-                <i class="fa-solid fa-minus"></i>
-              </button>
-              <span class="w-6 text-center text-xs font-bold text-slate-800">${p.quantity}</span>
-              <button onclick="updateQuantity('${p.id}', 1)" class="w-5 h-5 flex items-center justify-center hover:bg-emerald-50 text-emerald-700 font-bold text-[10px] cursor-pointer">
-                <i class="fa-solid fa-plus"></i>
-              </button>
-            </div>
-            <span class="font-black text-emerald-700 w-12 text-right">₹${subtotal}</span>
-            <button onclick="setManualQuantity('${p.id}', 0)" class="text-slate-400 hover:text-rose-600 p-1 cursor-pointer">
-              <i class="fa-solid fa-trash text-[11px]"></i>
-            </button>
-          </div>
-        `;
-        container.appendChild(itemRow);
-      });
-    }
-
-    function updateSidebarAndLayout() {
-      const selected = products.filter(p => p.quantity > 0);
-      const layoutContainer = document.getElementById('main-layout-container');
-      const sidebar = document.getElementById('live-cart-sidebar');
+      const floatBar = document.getElementById('floating-cart-bar');
 
       if (selected.length > 0) {
-        layoutContainer.className = "grid grid-cols-1 lg:grid-cols-3 gap-6 transition-all duration-300";
-        layoutContainer.children[0].className = "lg:col-span-2 space-y-4";
-        sidebar.className = "lg:col-span-1 block";
-        
-        renderSidebar();
-
         const totalItemsCount = selected.reduce((sum, p) => sum + p.quantity, 0);
         const grandTotal = calculateCatalogTotal();
 
-        document.getElementById('sidebar-total-items-badge').textContent = `${totalItemsCount} Items`;
-        document.getElementById('sidebar-subtotal').textContent = `₹${grandTotal}`;
-        document.getElementById('sidebar-grand-total').textContent = `₹${grandTotal}`;
+        document.getElementById('float-total-items-badge').textContent = totalItemsCount;
+        document.getElementById('float-grand-total').textContent = `₹${grandTotal}`;
+
+        // Smooth slide-up transition animation
+        floatBar.classList.remove('translate-y-24', 'opacity-0', 'pointer-events-none');
+        floatBar.classList.add('translate-y-0', 'opacity-100', 'pointer-events-auto');
       } else {
-        layoutContainer.className = "grid grid-cols-1 gap-6 transition-all duration-300";
-        layoutContainer.children[0].className = "space-y-4";
-        sidebar.className = "hidden";
+        // Smooth slide-down transition animation
+        floatBar.classList.remove('translate-y-0', 'opacity-100', 'pointer-events-auto');
+        floatBar.classList.add('translate-y-24', 'opacity-0', 'pointer-events-none');
       }
     }
 
@@ -464,15 +391,6 @@
       const prod = products.find(p => p.id === prodId);
       if (prod) {
         prod.quantity = Math.max(0, prod.quantity + change);
-        renderCatalog();
-      }
-    }
-
-    function setManualQuantity(prodId, val) {
-      const prod = products.find(p => p.id === prodId);
-      if (prod) {
-        const parsed = parseInt(val, 10);
-        prod.quantity = isNaN(parsed) || parsed < 0 ? 0 : parsed;
         renderCatalog();
       }
     }

@@ -31,7 +31,7 @@
     <div class="bg-white rounded-2xl border border-slate-200 shadow-xs p-4 space-y-3">
       <div class="flex items-center justify-between border-b border-slate-100 pb-2">
         <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Selected Groceries</span>
-        <a href="index.html" class="text-xs font-bold text-emerald-600 hover:underline"><i class="fa-solid fa-pen-to-square"></i> Edit</a>
+        <span class="text-[11px] font-semibold text-emerald-600">Direct Item Removal</span>
       </div>
 
       <div id="cart-items-list" class="space-y-2.5 divide-y divide-slate-100"></div>
@@ -141,16 +141,21 @@
       }
 
       let grandTotal = 0;
-      cart.forEach(item => {
+      cart.forEach((item, index) => {
         grandTotal += item.subtotal;
         const row = document.createElement('div');
-        row.className = 'pt-2 flex items-center justify-between text-xs';
+        row.className = 'pt-2 flex items-center justify-between text-xs gap-2';
         row.innerHTML = `
-          <div>
-            <span class="font-bold text-slate-800">${item.name}</span>
+          <div class="flex-grow min-w-0">
+            <span class="font-bold text-slate-800 truncate block">${item.name}</span>
             <div class="text-[10px] text-slate-500">${item.unit} × ${item.qty}</div>
           </div>
-          <span class="font-black text-slate-900">₹${item.subtotal}</span>
+          <div class="flex items-center gap-3 flex-shrink-0">
+            <span class="font-black text-slate-900">₹${item.subtotal}</span>
+            <button onclick="removeFromCart(${index})" class="w-7 h-7 flex items-center justify-center rounded-lg bg-slate-100 hover:bg-rose-50 text-slate-400 hover:text-rose-600 transition cursor-pointer" title="Delete item">
+              <i class="fa-solid fa-trash text-xs"></i>
+            </button>
+          </div>
         `;
         container.appendChild(row);
       });
@@ -171,6 +176,12 @@
       if (!document.getElementById('cust-address').value.trim() && navigator.geolocation) {
         detectGPSLocation(true);
       }
+    }
+
+    function removeFromCart(index) {
+      cart.splice(index, 1);
+      localStorage.setItem('mfd_cart', JSON.stringify(cart));
+      loadCart();
     }
 
     function detectGPSLocation(isAutomatic = false) {
