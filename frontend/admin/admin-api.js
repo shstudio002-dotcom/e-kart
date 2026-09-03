@@ -97,8 +97,8 @@ const AdminAPI = {
     }
 
     try {
-      const res = await fetch(`${API_BASE_URL}/products/${productId}/price`, {
-        method: 'PATCH',
+      const res = await fetch(`${API_BASE_URL}/products/${productId}`, {
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ basePriceKg: Number(newPrice) })
       });
