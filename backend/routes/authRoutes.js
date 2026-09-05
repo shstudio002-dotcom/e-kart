@@ -1,20 +1,25 @@
 // backend/routes/authRoutes.js
 const express = require('express');
 const router = express.Router();
+const bcrypt = require('bcrypt');
 const User = require('../models/User');
+const adminConfig = require('../config/adminConfig');
 
-// Seed default Admin User on startup with mobile and fixed password
+// Seed default Admin User on startup with mobile and fixed password securely
 async function seedAdmin() {
   try {
     const adminExists = await User.findOne({ role: 'admin' });
     if (!adminExists) {
+      const saltRounds = 10;
+      const hashedPassword = await bcrypt.hash(adminConfig.password, saltRounds);
+
       await User.create({
-        name: 'Hub Admin',
-        mobile: '9999999999',
-        password: 'adminpassword123',
-        role: 'admin'
+        name: adminConfig.name,
+        mobile: adminConfig.mobile,
+        password: hashedPassword,
+        role: adminConfig.role
       });
-      console.log('Default admin user created successfully (Mobile: 9999999999, Password: adminpassword123).');
+      console.log(`Default admin user created successfully (Mobile: ${adminConfig.mobile}).`);
     }
   } catch (err) {
     console.error('Error seeding admin user:', err);
@@ -35,7 +40,10 @@ router.post('/signup', async (req, res) => {
       return res.status(400).json({ message: 'Mobile number already registered.' });
     }
 
-    const user = await User.create({ name, mobile, password, role: 'customer' });
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    const user = await User.create({ name, mobile, password: hashedPassword, role: 'customer' });
     res.status(201).json({ message: 'User registered successfully', user: { id: user._id, name: user.name, mobile: user.mobile, role: user.role } });
   } catch (err) {
     res.status(500).json({ message: 'Server error during registration', error: err.message });
@@ -52,7 +60,12 @@ router.post('/login', async (req, res) => {
 
     const user = await User.findOne({ $or: [{ mobile: identifier }, { name: identifier }] });
     
-    if (!user || user.password !== password) {
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid mobile number or password.' });
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
       return res.status(401).json({ message: 'Invalid mobile number or password.' });
     }
 
