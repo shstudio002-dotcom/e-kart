@@ -42,6 +42,23 @@
       white-space: nowrap;
       animation: marquee 15s linear infinite;
     }
+
+    /* Flying product animation element style */
+    .flying-item {
+      position: fixed;
+      z-index: 9999;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: #059669;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+      pointer-events: none;
+      transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+    }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-900 pb-36 min-h-screen flex flex-col antialiased">
@@ -187,7 +204,7 @@
           <i class="fa-solid fa-cart-shopping"></i>
           <span id="float-total-items-badge" class="absolute -top-1.5 -right-1.5 bg-amber-400 text-slate-950 text-[10px] font-black px-1.5 py-0.2 rounded-full border border-slate-900">0</span>
         </div>
-        <div>
+      <div>
           <p class="text-[10px] text-slate-400 uppercase font-semibold">Total Amount</p>
           <h4 id="float-grand-total" class="text-base sm:text-lg font-black text-amber-300 leading-none">₹0</h4>
         </div>
@@ -209,7 +226,7 @@
       <a href="index.html" class="flex flex-col items-center justify-center py-1 text-green-700 font-bold text-xs bg-green-50 rounded-xl">
         <span class="text-base leading-none">🏠</span><span class="mt-1">Home</span>
       </a>
-      <a href="cart.html" class="flex flex-col items-center justify-center py-1 text-gray-600 hover:text-green-700 font-semibold text-xs">
+      <a id="bottom-cart-nav" href="cart.html" class="flex flex-col items-center justify-center py-1 text-gray-600 hover:text-green-700 font-semibold text-xs relative transition-transform duration-300">
         <span class="text-base leading-none">🛒</span><span class="mt-1">Cart</span>
       </a>
       <a href="orders.html" class="flex flex-col items-center justify-center py-1 text-gray-600 hover:text-green-700 font-semibold text-xs">
@@ -323,7 +340,7 @@
 
         card.innerHTML = `
           <div>
-            <div class="w-full h-28 bg-slate-100 rounded-xl mb-2.5 flex items-center justify-center text-emerald-600 text-3xl font-bold relative overflow-hidden">
+            <div id="img-box-${p.id}" class="w-full h-28 bg-slate-100 rounded-xl mb-2.5 flex items-center justify-center text-emerald-600 text-3xl font-bold relative overflow-hidden">
               ${imageHtml}
             </div>
             <h4 class="font-bold text-slate-900 text-xs sm:text-sm leading-tight line-clamp-1">${p.nameKan}</h4>
@@ -351,7 +368,8 @@
 
             ${p.quantity === 0 ? `
               <button 
-                onclick="updateQuantity('${p.id}', 1)" 
+                id="add-btn-${p.id}"
+                onclick="updateQuantity('${p.id}', 1, event)" 
                 class="w-full py-2 bg-emerald-50 hover:bg-emerald-600 hover:text-white text-emerald-700 font-bold rounded-xl text-xs transition flex items-center justify-center gap-1.5 border border-emerald-200 cursor-pointer"
               >
                 <i class="fa-solid fa-plus text-[10px]"></i> Add
@@ -359,14 +377,15 @@
             ` : `
               <div class="flex items-center justify-between border border-emerald-300 bg-emerald-50/50 rounded-xl p-1">
                 <button 
-                  onclick="updateQuantity('${p.id}', -1)" 
+                  onclick="updateQuantity('${p.id}', -1, event)" 
                   class="w-7 h-7 flex items-center justify-center rounded-lg bg-white hover:bg-slate-100 text-slate-700 font-bold shadow-2xs transition text-xs cursor-pointer"
                 >
                   <i class="fa-solid fa-minus"></i>
                 </button>
                 <span class="text-xs font-black text-emerald-900">${p.quantity}</span>
                 <button 
-                  onclick="updateQuantity('${p.id}', 1)" 
+                  id="add-btn-${p.id}"
+                  onclick="updateQuantity('${p.id}', 1, event)" 
                   class="w-7 h-7 flex items-center justify-center rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-2xs transition text-xs cursor-pointer"
                 >
                   <i class="fa-solid fa-plus"></i>
@@ -410,12 +429,53 @@
       }
     }
 
-    function updateQuantity(prodId, change) {
+    function updateQuantity(prodId, change, event) {
       const prod = products.find(p => p.id === prodId);
       if (prod) {
         prod.quantity = Math.max(0, prod.quantity + change);
+        
+        // Trigger fly-to-cart animation only when adding items (change > 0)
+        if (change > 0 && event) {
+          triggerFlyToCartAnimation(event.currentTarget);
+        }
+
         renderCatalog();
       }
+    }
+
+    // Flying animation logic to target bottom cart tab icon
+    function triggerFlyToCartAnimation(buttonEl) {
+      const cartNavIcon = document.getElementById('bottom-cart-nav');
+      if (!cartNavIcon || !buttonEl) return;
+
+      const btnRect = buttonEl.getBoundingClientRect();
+      const cartRect = cartNavIcon.getBoundingClientRect();
+
+      const flyer = document.createElement('div');
+      flyer.className = 'flying-item';
+      flyer.innerHTML = '<i class="fa-solid fa-basket-shopping text-xs"></i>';
+      flyer.style.left = `${btnRect.left + btnRect.width / 2 - 20}px`;
+      flyer.style.top = `${btnRect.top + btnRect.height / 2 - 20}px`;
+      document.body.appendChild(flyer);
+
+      // Force layout calculation
+      flyer.getBoundingClientRect();
+
+      setTimeout(() => {
+        flyer.style.left = `${cartRect.left + cartRect.width / 2 - 20}px`;
+        flyer.style.top = `${cartRect.top + cartRect.height / 2 - 20}px`;
+        flyer.style.transform = 'scale(0.3)';
+        flyer.style.opacity = '0.3';
+      }, 20);
+
+      setTimeout(() => {
+        flyer.remove();
+        // Bounce the bottom cart icon slightly
+        cartNavIcon.classList.add('scale-125', 'text-emerald-600');
+        setTimeout(() => {
+          cartNavIcon.classList.remove('scale-125', 'text-emerald-600');
+        }, 300);
+      }, 800);
     }
 
     function clearCatalogSelection() {
