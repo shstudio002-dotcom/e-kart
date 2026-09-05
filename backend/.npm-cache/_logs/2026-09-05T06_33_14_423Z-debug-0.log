@@ -1,0 +1,230 @@
+0 verbose cli C:\Program Files\nodejs\node.exe C:\Program Files\nodejs\node_modules\npm\bin\npm-cli.js
+1 info using npm@10.9.2
+2 info using node@v22.14.0
+3 silly config load:file:C:\Program Files\nodejs\node_modules\npm\npmrc
+4 silly config load:file:E:\grocery-delivery\backend\.npmrc
+5 silly config load:file:C:\Users\HP\.npmrc
+6 silly config load:file:E:\grocery-delivery\backend\.npm-global\etc\npmrc
+7 verbose title npm install helmet
+8 verbose argv "install" "helmet"
+9 verbose logfile logs-max:10 dir:E:\grocery-delivery\backend\.npm-cache\_logs\2026-09-05T06_33_14_423Z-
+10 verbose logfile E:\grocery-delivery\backend\.npm-cache\_logs\2026-09-05T06_33_14_423Z-debug-0.log
+11 silly logfile start cleaning logs, removing 1 files
+12 silly packumentCache heap:2197815296 maxSize:549453824 maxEntrySize:274726912
+13 silly idealTree buildDeps
+14 silly fetch manifest helmet@*
+15 silly packumentCache full:https://registry.npmjs.org/helmet cache-miss
+16 silly logfile done cleaning log files
+17 http fetch GET 200 https://registry.npmjs.org/helmet 477ms (cache miss)
+18 silly packumentCache full:https://registry.npmjs.org/helmet set size:undefined disposed:false
+19 silly placeDep ROOT helmet@8.3.0 OK for: mf-dari-grocery-backend@1.0.0 want: *
+20 silly reify moves {}
+21 silly audit bulk request {
+21 silly audit   '@mongodb-js/saslprep': [ '1.5.0' ],
+21 silly audit   '@socket.io/component-emitter': [ '3.1.2' ],
+21 silly audit   '@types/cors': [ '2.8.19' ],
+21 silly audit   '@types/node': [ '26.4.0' ],
+21 silly audit   '@types/webidl-conversions': [ '7.0.3' ],
+21 silly audit   '@types/whatwg-url': [ '13.0.0', '11.0.5' ],
+21 silly audit   '@types/ws': [ '8.18.1' ],
+21 silly audit   accepts: [ '1.3.8' ],
+21 silly audit   anymatch: [ '3.1.3' ],
+21 silly audit   'append-field': [ '1.0.0' ],
+21 silly audit   'array-flatten': [ '1.1.1' ],
+21 silly audit   'balanced-match': [ '4.0.4' ],
+21 silly audit   base64id: [ '2.0.0' ],
+21 silly audit   bcrypt: [ '6.0.0' ],
+21 silly audit   'binary-extensions': [ '2.3.0' ],
+21 silly audit   'body-parser': [ '1.20.6' ],
+21 silly audit   'brace-expansion': [ '5.0.9' ],
+21 silly audit   braces: [ '3.0.3' ],
+21 silly audit   bson: [ '6.10.4', '7.3.2' ],
+21 silly audit   'buffer-equal-constant-time': [ '1.0.1' ],
+21 silly audit   'buffer-from': [ '1.1.2' ],
+21 silly audit   busboy: [ '1.6.0' ],
+21 silly audit   bytes: [ '3.1.2' ],
+21 silly audit   'call-bind-apply-helpers': [ '1.0.2' ],
+21 silly audit   'call-bound': [ '1.0.4' ],
+21 silly audit   chokidar: [ '3.6.0' ],
+21 silly audit   cloudinary: [ '2.11.0' ],
+21 silly audit   compressible: [ '2.0.18' ],
+21 silly audit   compression: [ '1.8.1' ],
+21 silly audit   negotiator: [ '0.6.4', '0.6.3' ],
+21 silly audit   'concat-stream': [ '2.0.0' ],
+21 silly audit   'content-disposition': [ '0.5.4' ],
+21 silly audit   'content-type': [ '1.0.5' ],
+21 silly audit   cookie: [ '0.7.2' ],
+21 silly audit   'cookie-signature': [ '1.0.7' ],
+21 silly audit   cors: [ '2.8.6' ],
+21 silly audit   debug: [ '2.6.9', '4.4.3' ],
+21 silly audit   depd: [ '2.0.0' ],
+21 silly audit   destroy: [ '1.2.0' ],
+21 silly audit   dotenv: [ '16.6.1' ],
+21 silly audit   'dunder-proto': [ '1.0.1' ],
+21 silly audit   'ecdsa-sig-formatter': [ '1.0.11' ],
+21 silly audit   'ee-first': [ '1.1.1' ],
+21 silly audit   encodeurl: [ '2.0.0' ],
+21 silly audit   'engine.io': [ '6.6.9' ],
+21 silly audit   'engine.io-parser': [ '5.2.3' ],
+21 silly audit   ms: [ '2.1.3', '2.0.0' ],
+21 silly audit   'es-define-property': [ '1.0.1' ],
+21 silly audit   'es-errors': [ '1.3.0' ],
+21 silly audit   'es-object-atoms': [ '1.1.2' ],
+21 silly audit   'escape-html': [ '1.0.3' ],
+21 silly audit   etag: [ '1.8.1' ],
+21 silly audit   express: [ '4.22.2' ],
+21 silly audit   'express-rate-limit': [ '8.7.0' ],
+21 silly audit   'fill-range': [ '7.1.1' ],
+21 silly audit   finalhandler: [ '1.3.2' ],
+21 silly audit   forwarded: [ '0.2.0' ],
+21 silly audit   fresh: [ '0.5.2' ],
+21 silly audit   fsevents: [ '2.3.3' ],
+21 silly audit   'function-bind': [ '1.1.2' ],
+21 silly audit   'get-intrinsic': [ '1.3.0' ],
+21 silly audit   'get-proto': [ '1.0.1' ],
+21 silly audit   'glob-parent': [ '5.1.2' ],
+21 silly audit   gopd: [ '1.2.0' ],
+21 silly audit   'has-flag': [ '3.0.0' ],
+21 silly audit   'has-symbols': [ '1.1.0' ],
+21 silly audit   hasown: [ '2.0.4' ],
+21 silly audit   'http-errors': [ '2.0.1' ],
+21 silly audit   'iconv-lite': [ '0.4.24' ],
+21 silly audit   'ignore-by-default': [ '1.0.1' ],
+21 silly audit   inherits: [ '2.0.4' ],
+21 silly audit   'ip-address': [ '10.7.0' ],
+21 silly audit   'ipaddr.js': [ '1.9.1' ],
+21 silly audit   'is-binary-path': [ '2.1.0' ],
+21 silly audit   'is-extglob': [ '2.1.1' ],
+21 silly audit   'is-glob': [ '4.0.3' ],
+21 silly audit   'is-number': [ '7.0.0' ],
+21 silly audit   jsonwebtoken: [ '9.0.3' ],
+21 silly audit   jwa: [ '2.0.1' ],
+21 silly audit   jws: [ '4.0.1' ],
+21 silly audit   kareem: [ '2.6.3' ],
+21 silly audit   lodash: [ '4.18.1' ],
+21 silly audit   'lodash.includes': [ '4.3.0' ],
+21 silly audit   'lodash.isboolean': [ '3.0.3' ],
+21 silly audit   'lodash.isinteger': [ '4.0.4' ],
+21 silly audit   'lodash.isnumber': [ '3.0.3' ],
+21 silly audit   'lodash.isplainobject': [ '4.0.6' ],
+21 silly audit   'lodash.isstring': [ '4.0.1' ],
+21 silly audit   'lodash.once': [ '4.1.1' ],
+21 silly audit   'math-intrinsics': [ '1.1.0' ],
+21 silly audit   'media-typer': [ '0.3.0' ],
+21 silly audit   'memory-pager': [ '1.5.0' ],
+21 silly audit   'merge-descriptors': [ '1.0.3' ],
+21 silly audit   methods: [ '1.1.2' ],
+21 silly audit   mime: [ '1.6.0' ],
+21 silly audit   'mime-db': [ '1.52.0' ],
+21 silly audit   'mime-types': [ '2.1.35' ],
+21 silly audit   minimatch: [ '10.2.6' ],
+21 silly audit   mongodb: [ '7.6.0', '6.20.0' ],
+21 silly audit   'mongodb-connection-string-url': [ '7.0.2', '3.0.2' ],
+21 silly audit   mongoose: [ '8.24.4' ],
+21 silly audit   mpath: [ '0.9.0' ],
+21 silly audit   mquery: [ '5.0.0' ],
+21 silly audit   multer: [ '2.3.0' ],
+21 silly audit   'node-addon-api': [ '8.9.2' ],
+21 silly audit   'node-gyp-build': [ '4.8.4' ],
+21 silly audit   nodemon: [ '3.1.14' ],
+21 silly audit   'normalize-path': [ '3.0.0' ],
+21 silly audit   'object-assign': [ '4.1.1' ],
+21 silly audit   'object-inspect': [ '1.13.4' ],
+21 silly audit   'on-finished': [ '2.4.1' ],
+21 silly audit   'on-headers': [ '1.1.0' ],
+21 silly audit   parseurl: [ '1.3.3' ],
+21 silly audit   'path-to-regexp': [ '0.1.13' ],
+21 silly audit   picomatch: [ '2.3.2' ],
+21 silly audit   'proxy-addr': [ '2.0.7' ],
+21 silly audit   'pstree.remy': [ '1.1.8' ],
+21 silly audit   punycode: [ '2.3.1' ],
+21 silly audit   qs: [ '6.15.3' ],
+21 silly audit   'range-parser': [ '1.2.1' ],
+21 silly audit   'raw-body': [ '2.5.3' ],
+21 silly audit   'readable-stream': [ '3.6.2' ],
+21 silly audit   readdirp: [ '3.6.0' ],
+21 silly audit   'safe-buffer': [ '5.2.1' ],
+21 silly audit   'safer-buffer': [ '2.1.2' ],
+21 silly audit   semver: [ '7.8.5' ],
+21 silly audit   send: [ '0.19.2' ],
+21 silly audit   'serve-static': [ '1.16.3' ],
+21 silly audit   setprototypeof: [ '1.2.0' ],
+21 silly audit   'side-channel': [ '1.1.1' ],
+21 silly audit   'side-channel-list': [ '1.0.1' ],
+21 silly audit   'side-channel-map': [ '1.0.1' ],
+21 silly audit   'side-channel-weakmap': [ '1.0.2' ],
+21 silly audit   sift: [ '17.1.3' ],
+21 silly audit   'simple-update-notifier': [ '2.0.0' ],
+21 silly audit   'socket.io': [ '4.8.3' ],
+21 silly audit   'socket.io-adapter': [ '2.5.8' ],
+21 silly audit   'socket.io-parser': [ '4.2.7' ],
+21 silly audit   'sparse-bitfield': [ '3.0.3' ],
+21 silly audit   statuses: [ '2.0.2' ],
+21 silly audit   streamsearch: [ '1.1.0' ],
+21 silly audit   string_decoder: [ '1.3.0' ],
+21 silly audit   'supports-color': [ '5.5.0' ],
+21 silly audit   'to-regex-range': [ '5.0.1' ],
+21 silly audit   toidentifier: [ '1.0.1' ],
+21 silly audit   touch: [ '3.1.1' ],
+21 silly audit   tr46: [ '5.1.1' ],
+21 silly audit   'type-is': [ '1.6.18' ],
+21 silly audit   typedarray: [ '0.0.6' ],
+21 silly audit   undefsafe: [ '2.0.5' ],
+21 silly audit   'undici-types': [ '8.3.0' ],
+21 silly audit   unpipe: [ '1.0.0' ],
+21 silly audit   'util-deprecate': [ '1.0.2' ],
+21 silly audit   'utils-merge': [ '1.0.1' ],
+21 silly audit   vary: [ '1.1.2' ],
+21 silly audit   'webidl-conversions': [ '7.0.0' ],
+21 silly audit   'whatwg-url': [ '14.2.0' ],
+21 silly audit   ws: [ '8.21.3' ],
+21 silly audit   helmet: [ '8.3.0' ]
+21 silly audit }
+22 verbose reify failed optional dependency E:\grocery-delivery\backend\node_modules\fsevents
+23 silly reify mark deleted [ 'E:\\grocery-delivery\\backend\\node_modules\\fsevents' ]
+24 http cache helmet@https://registry.npmjs.org/helmet/-/helmet-8.3.0.tgz 0ms (cache hit)
+25 silly tarball no local data for helmet@https://registry.npmjs.org/helmet/-/helmet-8.3.0.tgz. Extracting by manifest.
+26 http fetch GET 200 https://registry.npmjs.org/helmet/-/helmet-8.3.0.tgz 251ms (cache miss)
+27 http fetch POST 200 https://registry.npmjs.org/-/npm/v1/security/advisories/bulk 298ms
+28 silly audit report {
+28 silly audit report   qs: [
+28 silly audit report     {
+28 silly audit report       id: 1158506,
+28 silly audit report       url: 'https://github.com/advisories/GHSA-x5fp-wj9c-mxmx',
+28 silly audit report       title: 'qs array-limit bypass via bracket-key comma parsing',
+28 silly audit report       severity: 'moderate',
+28 silly audit report       vulnerable_versions: '>=6.14.2 <=6.15.3',
+28 silly audit report       cwe: [Array],
+28 silly audit report       cvss: [Object]
+28 silly audit report     },
+28 silly audit report     {
+28 silly audit report       id: 1158507,
+28 silly audit report       url: 'https://github.com/advisories/GHSA-4mjr-xmp4-gh2g',
+28 silly audit report       title: 'qs: Denial of Service via Attacker Controlled isBuffer',
+28 silly audit report       severity: 'moderate',
+28 silly audit report       vulnerable_versions: '>=2.2.5 <6.16.0',
+28 silly audit report       cwe: [Array],
+28 silly audit report       cvss: [Object]
+28 silly audit report     }
+28 silly audit report   ]
+28 silly audit report }
+29 silly packumentCache corgi:https://registry.npmjs.org/qs cache-miss
+30 http cache https://registry.npmjs.org/qs 22ms (cache hit)
+31 silly packumentCache corgi:https://registry.npmjs.org/qs set size:149425 disposed:false
+32 silly packumentCache corgi:https://registry.npmjs.org/body-parser cache-miss
+33 silly packumentCache corgi:https://registry.npmjs.org/express cache-miss
+34 http cache https://registry.npmjs.org/body-parser 10ms (cache hit)
+35 silly packumentCache corgi:https://registry.npmjs.org/body-parser set size:81203 disposed:false
+36 http cache https://registry.npmjs.org/express 12ms (cache hit)
+37 silly packumentCache corgi:https://registry.npmjs.org/express set size:339376 disposed:false
+38 silly packumentCache corgi:https://registry.npmjs.org/express-rate-limit cache-miss
+39 http cache https://registry.npmjs.org/express-rate-limit 11ms (cache hit)
+40 silly packumentCache corgi:https://registry.npmjs.org/express-rate-limit set size:184416 disposed:false
+41 silly ADD node_modules/helmet
+42 silly ADD
+43 verbose cwd E:\grocery-delivery\backend
+44 verbose os Windows_NT 10.0.26200
+45 verbose node v22.14.0
+46 verbose npm  v10.9.2
+47 verbose exit 0
+48 info ok

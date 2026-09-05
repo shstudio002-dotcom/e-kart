@@ -150,5 +150,49 @@ const GroceryAPI = {
       throw new Error(data.message || 'Registration failed');
     }
     return data;
+  },
+
+  // 6. Reset Password API
+  async resetPassword(mobile, newPassword) {
+    const res = await fetch(`${API_BASE_URL}/auth/reset-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ mobile, newPassword })
+    });
+    
+    const text = await res.text();
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch (e) {
+      throw new Error('Server returned an invalid response. Check backend connection.');
+    }
+
+    if (!res.ok) {
+      throw new Error(data.message || 'Failed to reset password');
+    }
+    return data;
+  },
+
+  // 7. Update Profile API
+  async updateProfile(userId, profileData) {
+    const res = await fetch(`${API_BASE_URL}/auth/users/${userId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(profileData)
+    });
+    
+    const text = await res.text();
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch (e) {
+      throw new Error('Server returned an invalid response. Check backend connection.');
+    }
+
+    if (!res.ok) {
+      throw new Error(data.message || 'Failed to update profile');
+    }
+    return data;
   }
 };

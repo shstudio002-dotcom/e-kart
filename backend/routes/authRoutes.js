@@ -75,4 +75,55 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// Reset Password Route (for users who forgot their password)
+router.post('/reset-password', async (req, res) => {
+  try {
+    const { mobile, newPassword } = req.body;
+    if (!mobile || !newPassword) {
+      return res.status(400).json({ message: 'Mobile number and new password are required.' });
+    }
+
+    const user = await User.findOne({ mobile });
+    if (!user) {
+      return res.status(404).json({ message: 'Mobile number not found.' });
+    }
+
+    const saltRounds = 10;
+    user.password = await bcrypt.hash(newPassword, saltRounds);
+    await user.save();
+
+    res.json({ message: 'Password updated successfully. You can now log in.' });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error during password reset', error: err.message });
+  }
+});
+
+// Update Profile Route
+router.put('/users/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, email, mobile } = req.body;
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    if (name) user.name = name;
+    if (mobile) user.mobile = mobile;
+
+    await user.save();
+
+    res.json({ 
+      message: 'Profile updated successfully', 
+      user: { id: user._id, name: user.name, mobile: user.mobile, role: user.role } 
+    });
+  } catch (err) {
+    if (err.code === 11000) {
+      return res.status(400).json({ message: 'Mobile number already in use by another account.' });
+    }
+    res.status(500).json({ message: 'Server error during profile update', error: err.message });
+  }
+});
+
 module.exports = router;

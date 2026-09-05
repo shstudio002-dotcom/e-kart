@@ -20,10 +20,11 @@
       <p id="form-subtitle" class="text-xs text-slate-500 font-mono">Sign in with your mobile number & password</p>
     </div>
 
-    <!-- Toggle Tabs for Login / Signup -->
-    <div class="grid grid-cols-2 bg-slate-100 p-1 rounded-xl text-xs font-bold">
+    <!-- Toggle Tabs for Login / Signup / Reset -->
+    <div class="grid grid-cols-3 bg-slate-100 p-1 rounded-xl text-xs font-bold text-center">
       <button type="button" onclick="switchMode('login')" id="tab-login" class="py-2 rounded-lg bg-white shadow-xs text-slate-950 transition cursor-pointer">Sign In</button>
       <button type="button" onclick="switchMode('signup')" id="tab-signup" class="py-2 rounded-lg text-slate-500 hover:text-slate-900 transition cursor-pointer">Register</button>
+      <button type="button" onclick="switchMode('reset')" id="tab-reset" class="py-2 rounded-lg text-slate-500 hover:text-slate-900 transition cursor-pointer">Reset</button>
     </div>
 
     <!-- Forms -->
@@ -36,20 +37,18 @@
 
       <div>
         <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Mobile Number</label>
-        <input type="tel" id="auth-identifier" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="Ph Number" />
-        
-        
+        <input type="tel" id="auth-identifier" required pattern="[0-9]{10}" maxlength="10" title="Please enter a valid 10-digit mobile number" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="10-digit mobile number" />
       </div>
 
       <div> 
-    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Password</label> 
-    <div class="relative">
-        <input type="password" id="auth-password" required class="w-full px-3.5 py-2.5 pr-10 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="••••••••" /> 
-        <button type="button" onclick="const p=document.getElementById('auth-password'); p.type=p.type==='password'?'text':'password';" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"> 
-            👁
-        </button>
-    </div>
-</div>
+        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1" id="password-label">Password</label> 
+        <div class="relative">
+            <input type="password" id="auth-password" required minlength="6" class="w-full px-3.5 py-2.5 pr-10 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="••••••••" /> 
+            <button type="button" onclick="const p=document.getElementById('auth-password'); p.type=p.type==='password'?'text':'password';" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"> 
+                👁
+            </button>
+        </div>
+      </div>
 
       <button type="submit" id="submit-btn" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold text-sm shadow-xs transition cursor-pointer">
         Sign In
@@ -62,36 +61,52 @@
   <script src="api.js"></script>
 
   <script>
-    let isLoginMode = true;
+    let currentMode = 'login'; // 'login', 'signup', or 'reset'
 
     function switchMode(mode) {
-      isLoginMode = (mode === 'login');
+      currentMode = mode;
       const nameContainer = document.getElementById('name-field-container');
       const title = document.getElementById('form-title');
       const subtitle = document.getElementById('form-subtitle');
       const submitBtn = document.getElementById('submit-btn');
       const tabLogin = document.getElementById('tab-login');
       const tabSignup = document.getElementById('tab-signup');
+      const tabReset = document.getElementById('tab-reset');
       const headerIcon = document.getElementById('header-icon');
+      const passwordLabel = document.getElementById('password-label');
 
-      if (isLoginMode) {
+      // Reset tab button styles
+      [tabLogin, tabSignup, tabReset].forEach(tab => {
+        tab.className = 'py-2 rounded-lg text-slate-500 hover:text-slate-900 transition cursor-pointer';
+      });
+
+      if (currentMode === 'login') {
         nameContainer.classList.add('hidden');
         document.getElementById('auth-name').removeAttribute('required');
         title.textContent = 'Welcome Back';
         subtitle.textContent = 'Sign in with your mobile number & password';
+        passwordLabel.textContent = 'Password';
         submitBtn.textContent = 'Sign In';
         tabLogin.className = 'py-2 rounded-lg bg-white shadow-xs text-slate-950 transition cursor-pointer';
-        tabSignup.className = 'py-2 rounded-lg text-slate-500 hover:text-slate-900 transition cursor-pointer';
         headerIcon.className = 'fa-solid fa-store';
-      } else {
+      } else if (currentMode === 'signup') {
         nameContainer.classList.remove('hidden');
         document.getElementById('auth-name').setAttribute('required', 'true');
         title.textContent = 'Create Account';
         subtitle.textContent = 'Sign up with your mobile number and create a password';
+        passwordLabel.textContent = 'Password';
         submitBtn.textContent = 'Register Account';
         tabSignup.className = 'py-2 rounded-lg bg-white shadow-xs text-slate-950 transition cursor-pointer';
-        tabLogin.className = 'py-2 rounded-lg text-slate-500 hover:text-slate-900 transition cursor-pointer';
         headerIcon.className = 'fa-solid fa-user-plus';
+      } else if (currentMode === 'reset') {
+        nameContainer.classList.add('hidden');
+        document.getElementById('auth-name').removeAttribute('required');
+        title.textContent = 'Reset Password';
+        subtitle.textContent = 'Enter your mobile number and set a new password';
+        passwordLabel.textContent = 'New Password';
+        submitBtn.textContent = 'Update Password';
+        tabReset.className = 'py-2 rounded-lg bg-white shadow-xs text-slate-950 transition cursor-pointer';
+        headerIcon.className = 'fa-solid fa-key';
       }
     }
 
@@ -101,21 +116,43 @@
       const password = document.getElementById('auth-password').value;
       const name = document.getElementById('auth-name').value.trim();
 
+      // Client-side security validations
+      if (!/^\d{10}$/.test(identifier)) {
+        alert('Please enter a valid 10-digit mobile number.');
+        return;
+      }
+      if (password.length < 6) {
+        alert('Password must be at least 6 characters long.');
+        return;
+      }
+
       try {
         let data;
-        if (isLoginMode) {
+        if (currentMode === 'login') {
           data = await GroceryAPI.login(identifier, password);
-        } else {
+          localStorage.setItem('mfd_user', JSON.stringify(data.user));
+          alert('Login successful!');
+          if (data.user.role === 'admin') {
+            window.location.href = './admin/admin.html';
+          } else {
+            window.location.href = 'index.html';
+          }
+        } else if (currentMode === 'signup') {
           data = await GroceryAPI.signup(name, identifier, password);
-        }
-
-        localStorage.setItem('mfd_user', JSON.stringify(data.user));
-        alert(isLoginMode ? 'Login successful!' : 'Registration successful!');
-        
-        if (data.user.role === 'admin') {
-          window.location.href = './admin/admin.html';
-        } else {
+          localStorage.setItem('mfd_user', JSON.stringify(data.user));
+          alert('Registration successful!');
           window.location.href = 'index.html';
+        } else if (currentMode === 'reset') {
+          const response = await fetch(`${API_BASE_URL}/reset-password`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ mobile: identifier, newPassword: password })
+          });
+          data = await response.json();
+          if (!response.ok) throw new Error(data.message || 'Failed to reset password.');
+          
+          alert('Password successfully updated! Please sign in.');
+          switchMode('login');
         }
       } catch (err) {
         console.error('Auth submission error:', err);
